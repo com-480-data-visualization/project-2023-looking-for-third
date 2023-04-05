@@ -2,8 +2,8 @@
 
 | Student's name | SCIPER |
 | -------------- | ------ |
-| | |
-| | |
+| Zacharie Serge Janek Mizeret | 270849 |
+| Andrija Kolić | 336957 |
 | | |
 
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
