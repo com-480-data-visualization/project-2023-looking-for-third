@@ -55,8 +55,18 @@ When we were searching for an idea for our data visualization project, we rememb
 
 Whilst looking for inspiration for the visualization, one of the group members recalled a Youtube video by Sebastien Lague, which showcased an interesting perspective of the world from a small toy plane which he created himself in Unity. We thought that this woul dbe a unique way to present the natural disaster data, and it would allow users to explore the world in an engaging and immersive way. Hence, we decided to combine the idea of the plane with the dataset to create our final idea for an interactive data visualization that we hope will inspire curiosity and awareness of the impact of natural disasters.
 
+From our research, most visualizations of natural disaster datasets have typically used static maps or graphs to display the locations and sizes of the events. Whilst these visualizations can be useful for converying the information, the thought they did not engage the user enough.
 
-![Alt text](Milestone1Files/PlaneInspiration.jpg?raw=True "Plane Inspiration from Sebastien Lague")
+### Inspiration for plane visualization
+![Plane Image](Milestone1Files/PlaneInspiration.jpg?raw=True "Plane Inspiration from Sebastien Lague")
+
+### Example of current work
+![Current Work Image](Milestone1Files/CurrentWorkExample.png "Example of current visualization")
+source: https://christophercannon.net/disasters.html
+
+
+### Implementation
+A quick side note about how we intend to implement our project, the aim is to use WebGL along with Javascript to render the mini "game" we plan to create. WebGL is a graphics library that allows rendering through browsers like chrome. Our inspiration for the plane comes from Sebastien Lague as mentioned, however we do not plan to copy his (open source) Unity code but rather recreate a similar interaction with WebGL.
 
 ## Milestone 2 (7th May, 5pm)
 
