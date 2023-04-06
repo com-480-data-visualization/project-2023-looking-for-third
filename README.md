@@ -38,6 +38,10 @@ For the spatial aspect of the data, the user will be able to fly around the glod
 
 Overall, we believe that this approach to data visualization will attracts users who are curious and interested in exploring the world around them. It is not intended to be a quick summary of all natural disasters, but rather an immersive experience that encourages the user to engage with the data and explore it at their own pace. By creating a visualizatoin that is interactive and engaging, we hope to provide users with a deeper understanding of natural disasters and their impact on the world.
 
+When we were searching for an idea for our data visualization project, we remembered the recent earthquakes that occured in Turkey. As we were reseaching the topic, we cam across a dataset that contained information on natural disasters from around the globe over the past century. However we still needed a way to present the data in an engaging and immersive manner. 
+
+Whilst looking for inspiration for the visualization, one of the group members recalled a Youtube video by Sebastien Lague, which showcased an interesting perspective of the world from a small toy plane which he created himself in Unity. We thought that this woul dbe a unique way to present the natural disaster data, and it would allow users to explore the world in an engaging and immersive way. Hence, we decided to combine the idea of the plane with the dataset to create our final idea for an interactive data visualization that we hope will inspire curiosity and awareness of the impact of natural disasters.
+
 
 
 ### Exploratory Data Analysis
