@@ -56,7 +56,7 @@ When we were searching for an idea for our data visualization project, we rememb
 Whilst looking for inspiration for the visualization, one of the group members recalled a Youtube video by Sebastien Lague, which showcased an interesting perspective of the world from a small toy plane which he created himself in Unity. We thought that this woul dbe a unique way to present the natural disaster data, and it would allow users to explore the world in an engaging and immersive way. Hence, we decided to combine the idea of the plane with the dataset to create our final idea for an interactive data visualization that we hope will inspire curiosity and awareness of the impact of natural disasters.
 
 
-![Alt text](relative%./Milestone1Files/PlaneInspiration.jpg?raw=True "Plane Inspiration from Sebastien Lague")
+![Alt text](Milestone1Files/PlaneInspiration.jpg?raw=True "Plane Inspiration from Sebastien Lague")
 
 ## Milestone 2 (7th May, 5pm)
 
