@@ -75,7 +75,7 @@ When we take a closer look, by restricting the time range we can see that the ev
 
 Another issue becomes apparent when selecting only events up until 1990, a lot of Eastern European and Central Asian countries are completely blank - the cause of this is that we are using only contemporary countries when mapping out disasters, something we will have to look into going forward.
 
-![Map Image Before 1990](Milestone1Files/EventMap2020.png?raw=True "Number of events per country up until 1990")
+![Map Image Before 1990](Milestone1Files/EventMapUntil1990.png?raw=True "Number of events per country up until 1990")
 
 ### Related work
 
