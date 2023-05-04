@@ -4,6 +4,8 @@ import  {deg_to_rad, mat4_matmul_many } from "../lib/icg_libs/icg_math.js"
 import { load_text, load_texture} from "../lib/icg_libs/icg_web.js"
 import { createSphere } from "./custom_globe_generator.js"
 import { init_globe } from "./custom_globe_renderer.js"
+import { icg_mesh_load_obj } from "../lib/icg_libs/icg_mesh.js"
+import { init_plane, init_plane_camera } from "./plane_renderer.js"
 
 const NEAR = 0.01
 const FAR = 100.0
@@ -22,8 +24,11 @@ const resources = {
 	"globe_texture": load_texture(regl, './textures/globe_high_res.jpg', {wrap: ['repeat', 'repeat']}),
 	"globe_normals": load_texture(regl, './textures/globe_norm_high_res.jpg'),
 	"globe_heights": load_texture(regl, './textures/globe_heights.png'),
+	"plane_texture": load_texture(regl, './textures/plane_texture.png'),
     "shaders/globe.vert.glsl": load_text('./src/shaders/globe.vert.glsl'),
 	"shaders/globe.frag.glsl": load_text('./src/shaders/globe.frag.glsl'),
+	"shaders/plane.vert.glsl": load_text('./src/shaders/plane.vert.glsl'),
+	"shaders/plane.frag.glsl": load_text('./src/shaders/plane.frag.glsl'),
 }
 
 for (const key of Object.keys(resources)){
@@ -31,18 +36,23 @@ for (const key of Object.keys(resources)){
 }
 
 const mat_world_to_cam = mat4.identity(mat4.create())
+const mat_projection = mat4.create()
+const mat_view = mat4.create()
+
 let cam_pos = vec3.scale(vec3.create(), vec3.normalize(vec3.create(),[-2.5,-2.5,0., 1.]), 2)
 let lookAt = [0.,0.,0., 1.]
-
 let down_vec = [1.,1.,0., 1.]
 let cam_up = [0.,0.,1.]
 let sun_pos = [0.,0.,2., 1.]
 
+const plane_pos = [-1.5,-1.5,0., 1.]
+
 const globe_mesh = createSphere(MESH_RESOLUTION)
-console.log("Vertices: ", globe_mesh.vertices.length)
-console.log("Faces: ", globe_mesh.faces.length)
+const plane_mesh = await icg_mesh_load_obj(regl, './meshes/plane.obj')
 
 const globe = init_globe(regl, resources, 0., 0., 0., globe_mesh)
+const plane = init_plane(regl, resources, 0., 0., -1.5, 0.2, plane_mesh)
+
 // Controller to handle multiple keys
 const controller = {
 	"w": {pressed: false, func: move_forward},
@@ -132,12 +142,11 @@ window.addEventListener('keyup', (event) => {
 	}
 })
 
-const mat_projection = mat4.create()
-const mat_view = mat4.create()
 
 const l_pos = [0.,0.,0.,0.]
 const c_pos = [0.,0.,0.,0.]
 
+const plane_mat_world_to_cam = init_plane_camera()
 
 regl.frame((frame) => {
 	executeMoves()
@@ -163,4 +172,12 @@ regl.frame((frame) => {
 
     regl.clear({color: [0.1,0.1,0.1,1.]})
     globe.draw(globe_info)
+
+	const plane_info = {
+		mat_projection:  mat_projection,
+		mat_view:  plane_mat_world_to_cam,
+		plane_texture:   resources.plane_texture,
+	}
+
+	plane.draw(plane_info)
 })
