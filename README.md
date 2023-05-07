@@ -107,6 +107,7 @@ A quick side note about how we intend to implement our project, the aim is to us
 **10% of the final grade**
 
 Report is at /Milestone2Files/Milestone2_Report.pdf
+
 Prototype is in /project/ (described in the report).
 
 ## Milestone 3 (4th June, 5pm)
