@@ -11,9 +11,20 @@
 
 	<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<script src="src/main.js" type="module"></script>
+	<div class="timeline-slider-container">
+		<div class="timeline-label-container">
+			<div class="timeline-label small">1900</div>
+			<div class="timeline-label" id="timeline-curr-value">2017</div>
+			<div class="timeline-label small">2021</div>
+		</div>
+		<input type="range" min="1900" max="2021" value="2017" class="timeline-slider" id="our-timeline-slider">
+	</div>
+
+	<script src="src/main.js" type="module"></script>
 
 </body>
+
 </html>
