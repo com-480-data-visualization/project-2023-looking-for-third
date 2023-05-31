@@ -45,13 +45,13 @@ let down_vec = [1.,1.,0., 1.]
 let cam_up = [0.,0.,1.]
 let sun_pos = [0.,0.,2., 1.]
 
-const plane_pos = [-1.5,-1.5,0., 1.]
+const plane_sun_pos = [0.,0.,0., 1.]
 
 const globe_mesh = createSphere(MESH_RESOLUTION)
 const plane_mesh = await icg_mesh_load_obj(regl, './meshes/plane.obj')
 
 const globe = init_globe(regl, resources, 0., 0., 0., globe_mesh)
-const plane = init_plane(regl, resources, 0., 0., -1.5, 0.2, plane_mesh)
+const plane = init_plane(regl, resources, 0., 0., -1.5, 0.15, plane_mesh)
 
 // Controller to handle multiple keys
 const controller = {
