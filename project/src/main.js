@@ -6,7 +6,7 @@ import { createSphere } from "./custom_globe_generator.js"
 import { init_globe } from "./custom_globe_renderer.js"
 import { icg_mesh_load_obj } from "../lib/icg_libs/icg_mesh.js"
 import { init_plane, init_plane_camera } from "./plane_renderer.js"
-import { init_disaster } from "./disaster_object.js"
+import { init_data_loader, load_data } from "./data_loader.js"
 
 const NEAR = 0.01
 const FAR = 100.0
@@ -21,6 +21,8 @@ document.getElementById("our-timeline-slider").addEventListener("input", (ev) =>
 	currentYear = ev.target.value;
 	// Update slider visual
 	document.getElementById("timeline-curr-value").innerHTML = currentYear;
+	// Load events for year
+	load_data(currentYear, disasters => disaster_list = disasters)
 });
 
 const regl = createREGL({
@@ -47,6 +49,8 @@ for (const key of Object.keys(resources)) {
 	resources[key] = await resources[key]
 }
 
+await init_data_loader(regl, resources)
+
 const mat_world_to_cam = mat4.identity(mat4.create())
 const mat_projection = mat4.create()
 const mat_view = mat4.create()
@@ -66,10 +70,16 @@ const globe = init_globe(regl, resources, 0., 0., 0., globe_mesh)
 const plane = init_plane(regl, resources, 0., 0., -1.5, 0.15, plane_mesh)
 
 // Example of how to initialize a disaster
-const disaster_pos = [-0.71, -0.71, 0.8]
+// const disaster_pos = [-0.71, -0.71, 0.8]
 // Posistion is automatically normalized so that the disaster is on the globe
 // The parameters are: regl, resources, x, y, z, scale, mesh, color
-const disaster = init_disaster(regl, resources, disaster_pos[0], disaster_pos[1], disaster_pos[2], 0.3, plane_mesh, vec3.fromValues(1., 0., 0.))
+// const disaster = init_disaster(regl, resources, disaster_pos[0], disaster_pos[1], disaster_pos[2], 0.3, plane_mesh, vec3.fromValues(1., 0., 0.))
+
+// List of DisasterActor objects to be rendered for currently selected year
+let disaster_list = []
+
+// Initial disaster load
+load_data(currentYear, disasters => disaster_list = disasters)
 
 // Controller to handle multiple keys
 const controller = {
@@ -166,7 +176,6 @@ const c_pos = [0., 0., 0., 0.]
 
 const plane_mat_world_to_cam = init_plane_camera()
 
-
 regl.frame((frame) => {
 	executeMoves()
 	mat4.perspective(mat_projection,
@@ -199,5 +208,6 @@ regl.frame((frame) => {
 	}
 
 	plane.draw(plane_info)
-	disaster.draw(globe_info)
+
+	disaster_list.forEach(obj => obj.draw(globe_info))
 })
