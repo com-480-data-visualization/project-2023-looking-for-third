@@ -1,21 +1,7 @@
-import { vec3 } from "../lib/gl-matrix_3.3.0/esm/index.js"
-import { icg_mesh_load_obj } from "../lib/icg_libs/icg_mesh.js"
-import { init_disaster } from "./disaster_object.js"
 import { toRadian } from "../lib/gl-matrix_3.3.0/esm/common.js"
 
 // TODO: would be used for caching
 // let disaster_dict = {}
-
-let regl
-let resources
-let cube_mesh
-
-async function init_data_loader(_regl, _resources) {
-    regl = _regl
-    resources = _resources
-
-    cube_mesh = await icg_mesh_load_obj(regl, './meshes/cube.obj')
-}
 
 function from_lat_lng_to_x_y_z(lat_in_degrees, lng_in_degrees) {
     let lat = toRadian(lat_in_degrees)
@@ -46,10 +32,17 @@ function extract_coords(row) {
         // Latitude and Longitude geocoded after some preprocessing of the 'Location' field
         // If present represents an array of places
         quality = 3
+
         let arr = JSON.parse(row['Smart Coords'])
         arr.forEach(el => {
             coords.push([el['Lat'], el['Lng']])
         })
+
+        // We restrict the maximum number of models assigned to a single disaster event - otherwise we can easily run into performance issues
+        // e.g. Moving from unrestricted to maximum 3 per event reduced the number of models from ~1800 to ~900 (for year 2000)
+        // Moving futher to maximum 1 per event reduced the number of models to ~500
+        // TODO: Maybe select the coordinates we're showing in a smarter way?
+        // coords = coords.slice(0, 1)
     } else if (row['Country Latitude'] != null && row['Country Longitude']) {
         // Latitude and Longitude geocoded from the 'Country' field - poor precision but available for every event
         quality = 2
@@ -59,8 +52,26 @@ function extract_coords(row) {
     return [quality, coords]
 }
 
+function log_with_timestamp(msg) {
+    let date = new Date()
+    date.setTime(Date.now())
+
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+    let seconds = date.getSeconds()
+    let milliseconds = date.getMilliseconds()
+
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    milliseconds = milliseconds < 10 ? '00' + milliseconds : (milliseconds < 100 ? '0' + milliseconds : milliseconds);
+    console.log(hours + ':' + minutes + ':' + seconds + '.' + milliseconds)
+
+    console.log(msg)
+}
+
 function construct_from_disaster_array(disasters) {
-    let disaster_actor_list = []
+    let disaster_blueprint_list = []
 
     disasters.forEach(row => {
         let extracted_coord_data = extract_coords(row)
@@ -75,19 +86,23 @@ function construct_from_disaster_array(disasters) {
         })
 
         coords.forEach(coord_pair => {
-            let dis = init_disaster(regl, resources, coord_pair[0], coord_pair[1], coord_pair[2], 0.03, cube_mesh, vec3.fromValues(1., 0., 0.))
-            disaster_actor_list.push(dis)
+            disaster_blueprint_list.push({
+                "x": coord_pair[0],
+                "y": coord_pair[1],
+                "z": coord_pair[2],
+                "scale": 0.03,
+                "mesh_index": 0,
+                "color_index": 0,
+            })
         })
     })
 
-    return disaster_actor_list
+    return disaster_blueprint_list
 }
 
 async function load_data(year, callback) {
     // // TODO: if we are doing caching, we would check for cached events here
     // if (year in disaster_dict && Array.isArray(disaster_dict[year]) && disaster_dict[year].length > 0) {
-    //     // Disasters already loaded for requested year
-    //     // disaster_list = construct_from_disaster_array(disaster_dict[year])
     //     callback(construct_from_disaster_array(disaster_dict[year]))
     //     return
     // }
@@ -103,9 +118,7 @@ async function load_data(year, callback) {
             // TODO: Do we wanna cache events in memory?
             // disaster_dict[year] = json
 
-            // disaster_list = construct_from_disaster_array(json)
             callback(construct_from_disaster_array(json))
-            // callback(construct_from_disaster_array(json.slice(0, 10)))
         })
         .catch((err) => {
             console.log(err)
@@ -115,6 +128,6 @@ async function load_data(year, callback) {
 }
 
 export {
-    init_data_loader,
     load_data,
+    log_with_timestamp,
 }

@@ -6,7 +6,8 @@ import { createSphere } from "./custom_globe_generator.js"
 import { init_globe } from "./custom_globe_renderer.js"
 import { icg_mesh_load_obj } from "../lib/icg_libs/icg_mesh.js"
 import { init_plane, init_plane_camera } from "./plane_renderer.js"
-import { init_data_loader, load_data } from "./data_loader.js"
+import { load_data, log_with_timestamp } from "./data_loader.js"
+import { init_disaster } from "./disaster_object.js"
 
 const NEAR = 0.01
 const FAR = 100.0
@@ -22,7 +23,7 @@ document.getElementById("our-timeline-slider").addEventListener("input", (ev) =>
 	// Update slider visual
 	document.getElementById("timeline-curr-value").innerHTML = currentYear;
 	// Load events for year
-	load_data(currentYear, disasters => disaster_list = disasters)
+	load_data(currentYear, receive_disaster_blueprints)
 });
 
 const regl = createREGL({
@@ -49,8 +50,6 @@ for (const key of Object.keys(resources)) {
 	resources[key] = await resources[key]
 }
 
-await init_data_loader(regl, resources)
-
 const mat_world_to_cam = mat4.identity(mat4.create())
 const mat_projection = mat4.create()
 const mat_view = mat4.create()
@@ -64,7 +63,7 @@ let sun_pos = [0., 0., 2., 1.]
 
 const globe_mesh = createSphere(MESH_RESOLUTION)
 const plane_mesh = await icg_mesh_load_obj(regl, './meshes/plane.obj')
-console.log(plane_mesh.vertex_normals)
+const cube_mesh = await icg_mesh_load_obj(regl, './meshes/cube.obj')
 
 const globe = init_globe(regl, resources, 0., 0., 0., globe_mesh)
 const plane = init_plane(regl, resources, 0., 0., -1.5, 0.15, plane_mesh)
@@ -75,11 +74,32 @@ const plane = init_plane(regl, resources, 0., 0., -1.5, 0.15, plane_mesh)
 // The parameters are: regl, resources, x, y, z, scale, mesh, color
 // const disaster = init_disaster(regl, resources, disaster_pos[0], disaster_pos[1], disaster_pos[2], 0.3, plane_mesh, vec3.fromValues(1., 0., 0.))
 
+function receive_disaster_blueprints(disaster_blueprints) {
+	// Dump the old disasters
+	disaster_list = []
+
+	// Reuse the objects from the pool
+	let cnt = 0
+	disaster_blueprints.forEach(bp => {
+		let dis = disaster_pool[cnt]
+		cnt++
+
+		dis.update(bp.x, bp.y, bp.z, bp.scale, vec3.fromValues(1., 0., 0.))
+		disaster_list.push(dis)
+	});
+}
+
 // List of DisasterActor objects to be rendered for currently selected year
 let disaster_list = []
+// List of DisasterActor to be reused - optimizing on allocation/deallocation
+let disaster_pool = []
+for (let i = 0; i < 2500; i++) {
+	let dis = init_disaster(regl, resources, 1., 0., 0., 1., cube_mesh, vec3.fromValues(1., 0., 0.))
+	disaster_pool.push(dis)
+}
 
 // Initial disaster load
-load_data(currentYear, disasters => disaster_list = disasters)
+load_data(currentYear, receive_disaster_blueprints)
 
 // Controller to handle multiple keys
 const controller = {

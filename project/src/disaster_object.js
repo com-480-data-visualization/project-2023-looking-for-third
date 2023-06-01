@@ -1,8 +1,8 @@
-import {mat3, mat4, vec3} from "../lib/gl-matrix_3.3.0/esm/index.js"
-import {mat4_matmul_many} from "../lib/icg_libs/icg_math.js"
+import { mat3, mat4, vec3 } from "../lib/gl-matrix_3.3.0/esm/index.js"
+import { mat4_matmul_many } from "../lib/icg_libs/icg_math.js"
 
 
-export function init_disaster(regl, resources, x, y, z, scale, mesh, color){
+export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
     const disaster_mesh = mesh
     const pipeline_draw_disaster = regl({
         // Pass the vertex positions, normals and uv coordinates to the vertex shader
@@ -24,8 +24,13 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color){
         frag: resources['shaders/disaster.frag.glsl'],
     })
 
-    class DisasterActor{
-        constructor(x, y, z, scale, c_color){
+    class DisasterActor {
+        constructor(x, y, z, scale, c_color) {
+            this.update(x, y, z, scale, c_color)
+        }
+
+        // TODO: mesh should also be updateable
+        update(x, y, z, scale, c_color) {
             this.color = c_color
             // Create the transformation matrices
             this.mat_mvp = mat4.create()
@@ -51,12 +56,12 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color){
             const angle = Math.acos(vec3.dot(normal, globe_normal))
 
             // Create the model to world matrix
-            this.mat_model_to_world = mat4.translate( mat_model_to_world, mat_model_to_world, globe_normal)
-            this.mat_model_to_world = mat4.scale( mat_model_to_world, mat_model_to_world, [scale, scale, scale])
+            this.mat_model_to_world = mat4.translate(mat_model_to_world, mat_model_to_world, globe_normal)
+            this.mat_model_to_world = mat4.scale(mat_model_to_world, mat_model_to_world, [scale, scale, scale])
             this.mat_model_to_world = mat4.rotate(this.mat_model_to_world, this.mat_model_to_world, angle, rot_axis)
         }
 
-        draw({mat_projection, mat_view}){
+        draw({ mat_projection, mat_view }) {
 
             mat4_matmul_many(this.mat_model_view, mat_view, this.mat_model_to_world)
             mat4_matmul_many(this.mat_mvp, mat_projection, this.mat_model_view)
@@ -73,7 +78,7 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color){
                 disaster_color: this.color,
             })
         }
-        
+
     }
 
     return new DisasterActor(x, y, z, scale, color)
