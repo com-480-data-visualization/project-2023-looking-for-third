@@ -1,5 +1,5 @@
 import { createREGL } from "../lib/regljs_2.1.0/regl.module.js"
-import { vec3, vec4, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
+import { vec2, vec3, vec4, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 import { deg_to_rad, mat4_matmul_many } from "../lib/icg_libs/icg_math.js"
 import { load_text, load_texture } from "../lib/icg_libs/icg_web.js"
 import { createSphere } from "./custom_globe_generator.js"
@@ -8,12 +8,15 @@ import { icg_mesh_load_obj } from "../lib/icg_libs/icg_mesh.js"
 import { init_plane, init_plane_camera } from "./plane_renderer.js"
 import { load_data, log_with_timestamp } from "./data_loader.js"
 import { init_disaster } from "./disaster_object.js"
+import { angle } from "../lib/gl-matrix_3.3.0/esm/vec2.js"
 
 const NEAR = 0.01
 const FAR = 100.0
 const STEP_SIZE = 0.005
 const ROT_STEP_SIZE = 0.1
 const MESH_RESOLUTION = 64
+
+const SHOW_MOUSE = true
 
 let currentYear = 2000;
 
@@ -67,6 +70,63 @@ const cube_mesh = await icg_mesh_load_obj(regl, './meshes/cube.obj')
 
 const globe = init_globe(regl, resources, 0., 0., 0., globe_mesh)
 const plane = init_plane(regl, resources, 0., 0., -1.5, 0.15, plane_mesh)
+
+// Ghost follows the player airplane, but uses the globe coordinate system
+let ghost_coords = vec3.fromValues(-0.71, -0.71, 0.)
+let mouse_offset_intensity = 0.
+let mouse_offset_angle = 0.
+// Mouse follows ghost, but uses mouse offset from center of screen to compute offset from ghost
+// Works pretty nice while the mouse is a reasonable distance from the center of the screen
+// Once the mouse goes to the corners the desync becomes very bad, cause of the curvature of the Earth
+let mouse_coords = vec3.fromValues(-0.71, -0.71, 0.)
+const mouse = init_disaster(regl, resources, mouse_coords[0], mouse_coords[1], mouse_coords[2], 0.25, cube_mesh, vec3.fromValues(0.3, 0.3, 1.))
+
+const MOUSE_STEP_SIZE = 0.325
+const MOUSE_ROT_STEP_SIZE = 1.
+document.addEventListener('mousemove', e => {
+	let min_dim = Math.min(window.innerWidth, window.innerHeight)
+	let x = (e.clientX - window.innerWidth * 0.5) / (min_dim * 0.5)
+	let y = (e.clientY - window.innerHeight * 0.5) / (min_dim * 0.5) * -1
+
+	mouse_offset_intensity = Math.sqrt(x * x + y * y)
+	mouse_offset_angle = angle(vec2.fromValues(0., 1.), vec2.fromValues(x, y))
+	if (x < 0) {
+		mouse_offset_angle = 2 * Math.PI - mouse_offset_angle
+	}
+
+	update_mouse()
+}, false)
+
+function update_mouse() {
+	// Copy the ghost position
+	vec3.copy(mouse_coords, ghost_coords)
+
+	// Compute the forward rotation axis
+	let forward_rot_axis = vec3.create()
+	vec3.cross(forward_rot_axis, cam_up, down_vec)
+	vec3.normalize(forward_rot_axis, forward_rot_axis)
+
+	// Compute the forward rotation matrix using the mouse offset intensity for the angle
+	let forward_rot_mat = mat4.create()
+	mat4.fromRotation(forward_rot_mat, MOUSE_STEP_SIZE * mouse_offset_intensity, forward_rot_axis)
+
+	// Forward rotate the mouse from the ghost
+	vec3.transformMat4(mouse_coords, mouse_coords, forward_rot_mat)
+
+	// Compute the sideways rotation axis
+	let side_rot_axis = vec3.clone(down_vec)
+	vec3.normalize(side_rot_axis, side_rot_axis)
+
+	// Compute the sideways rotation matrix using the mouse offset angle for the angle
+	let side_rot_mat = mat4.create()
+	mat4.fromRotation(side_rot_mat, MOUSE_ROT_STEP_SIZE * mouse_offset_angle, side_rot_axis)
+
+	// Sideways rotate the mouse around the ghost
+	vec3.transformMat4(mouse_coords, mouse_coords, side_rot_mat)
+
+	// Update the mouse object
+	mouse.update(mouse_coords[0], mouse_coords[1], mouse_coords[2], 0.25, vec3.fromValues(0.3, 0.3, 1.))
+}
 
 // Example of how to initialize a disaster
 // const disaster_pos = [-0.71, -0.71, 0.8]
@@ -138,6 +198,11 @@ function move_forward() {
 	// Rotate the down vector
 	vec3.transformMat4(down_vec, down_vec, rot_mat)
 
+	// Rotate the ghost position
+	vec3.transformMat4(ghost_coords, ghost_coords, rot_mat)
+
+	update_mouse()
+
 	// Update the camera transform
 	update_cam_transform()
 }
@@ -161,6 +226,11 @@ function rotate_sideways(left = false) {
 
 	// Rotate the down vector
 	vec3.transformMat4(down_vec, down_vec, rot_mat)
+
+	// Rotate the ghost position
+	vec3.transformMat4(ghost_coords, ghost_coords, rot_mat)
+
+	update_mouse()
 
 	// Update the camera transform
 	update_cam_transform()
@@ -228,6 +298,9 @@ regl.frame((frame) => {
 	}
 
 	plane.draw(plane_info)
+	if (SHOW_MOUSE) {
+		mouse.draw(globe_info)
+	}
 
 	disaster_list.forEach(obj => obj.draw(globe_info))
 })
