@@ -27,13 +27,57 @@ function from_lat_lng_to_x_y_z(lat_in_degrees, lng_in_degrees) {
     return [x, y, z]
 }
 
+function extract_coords(row) {
+    // Indicate the trust we have in the selected coordinates - some are more precise or reliable than others
+    // We can use this value if we have a need to filter events (if there are too many)
+    let quality = -1
+    // coords is an array of arrays - each element of coords is an array in the format: [lat, lng]
+    let coords = []
+
+    if (row['Latitude'] != null && row['Longitude']) {
+        // Latitude and Longitude that were provided in the dataset - should be very precise but is missing for most events
+        quality = 5
+        coords.push([row['Latitude'], row['Longitude']])
+    } else if (row['Location Latitude'] != null && row['Location Longitude']) {
+        // Latitude and Longitude geocoded from the raw 'Location' field - if present represents only one place
+        quality = 4
+        coords.push([row['Location Latitude'], row['Location Longitude']])
+    } else if (row['Smart Coords'] != null) {
+        // Latitude and Longitude geocoded after some preprocessing of the 'Location' field
+        // If present represents an array of places
+        quality = 3
+        let arr = JSON.parse(row['Smart Coords'])
+        arr.forEach(el => {
+            coords.push([el['Lat'], el['Lng']])
+        })
+    } else if (row['Country Latitude'] != null && row['Country Longitude']) {
+        // Latitude and Longitude geocoded from the 'Country' field - poor precision but available for every event
+        quality = 2
+        coords.push([row['Country Latitude'], row['Country Longitude']])
+    }
+
+    return [quality, coords]
+}
+
 function construct_from_disaster_array(disasters) {
     let disaster_actor_list = []
 
     disasters.forEach(row => {
-        let coords = from_lat_lng_to_x_y_z(row['Latitude'], row['Longitude'])
-        let dis = init_disaster(regl, resources, coords[0], coords[1], coords[2], 0.3, cube_mesh, vec3.fromValues(1., 0., 0.))
-        disaster_actor_list.push(dis)
+        let extracted_coord_data = extract_coords(row)
+        let coords_raw = extracted_coord_data[1]
+
+        let coords = []
+        coords_raw.forEach(coord_pair => {
+            let lat = parseFloat(coord_pair[0])
+            let lng = parseFloat(coord_pair[1])
+
+            coords.push(from_lat_lng_to_x_y_z(lat, lng))
+        })
+
+        coords.forEach(coord_pair => {
+            let dis = init_disaster(regl, resources, coord_pair[0], coord_pair[1], coord_pair[2], 0.03, cube_mesh, vec3.fromValues(1., 0., 0.))
+            disaster_actor_list.push(dis)
+        })
     })
 
     return disaster_actor_list
@@ -61,6 +105,7 @@ async function load_data(year, callback) {
 
             // disaster_list = construct_from_disaster_array(json)
             callback(construct_from_disaster_array(json))
+            // callback(construct_from_disaster_array(json.slice(0, 10)))
         })
         .catch((err) => {
             console.log(err)

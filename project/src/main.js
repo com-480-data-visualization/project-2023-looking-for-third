@@ -14,7 +14,7 @@ const STEP_SIZE = 0.005
 const ROT_STEP_SIZE = 0.1
 const MESH_RESOLUTION = 64
 
-let currentYear = 2017;
+let currentYear = 2000;
 
 document.getElementById("our-timeline-slider").addEventListener("input", (ev) => {
 	// Update variable used for visualization
