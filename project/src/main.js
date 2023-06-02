@@ -200,7 +200,7 @@ function empty_chunks() {
 
 function toggle_hover(on) {
 	let hovered = chunks[selected_event_index[0]][selected_event_index[1]][selected_event_index[2]][selected_event_index[3]]
-	hovered.set_color(on ? vec3.fromValues(1., 1., 1.) : disaster_colors[hovered.color_index])
+	hovered.set_color(on ? vec3.fromValues(1., 1., 1.) : hovered.passive_color)
 	hovered.set_scale(on ? 0.05 : 0.03)
 }
 

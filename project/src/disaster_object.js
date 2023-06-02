@@ -30,8 +30,11 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
         }
 
         // TODO: mesh should also be updateable
-        update(x, y, z, scale, c_color) {
+        update(x, y, z, scale, c_color, set_passive = true) {
             this.color = c_color
+            if (set_passive) {
+                this.passive_color = c_color
+            }
             // Create the transformation matrices
             this.mat_mvp = mat4.create()
             this.mat_model_view = mat4.create()
@@ -68,7 +71,7 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
         }
 
         set_scale(scale) {
-            this.update(this.position[0], this.position[1], this.position[2], scale, this.color)
+            this.update(this.position[0], this.position[1], this.position[2], scale, this.color, false)
         }
 
         draw({ mat_projection, mat_view }) {
