@@ -128,6 +128,23 @@ The various units of measurement available in CSS:
 	border-color: rgba(32, 32, 32, 1);
 }
 
+.tooltip-container {
+	z-index: 8;
+	width: fit-content;
+	height: fit-content;
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 0.4em 0.8em;
+	border-radius: 0.4em;
+	display: none;
+}
+
+.tooltip-body {
+	color: wheat;
+	width: fit-content;
+	height: fit-content;
+}
+
 #plot {
 	width: 100%;
 	height: 100%;
