@@ -85,6 +85,15 @@ const HOVER_MAX_DIST = 0.00125
 
 const MOUSE_STEP_SIZE = 0.325
 const MOUSE_ROT_STEP_SIZE = 1.
+
+let temp = document.getElementsByName("disaster_checkboxes")
+temp.forEach((checkbox) => {
+	checkbox.addEventListener("change", (ev) => {
+		console.log(checkbox.id, ev.target.checked)
+	})
+})
+
+
 document.addEventListener('mousemove', e => {
 	let min_dim = Math.min(window.innerWidth, window.innerHeight)
 	let x = (e.clientX - window.innerWidth * 0.5) / (min_dim * 0.5)

@@ -55,6 +55,31 @@ The various units of measurement available in CSS:
 	https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Values_and_units
 */
 
+.disaster-selection-container{
+	z-index: 9;
+	background-color: rgba(0, 0, 0, 0.5);
+	height: fit-content;
+	width: fit-content;
+	margin-top: 0.4em;
+	padding: 0.4em 0.8em;
+	border-radius: 0.4em;
+	position: absolute;
+	bottom: 1em;
+	right: 1em;
+}
+
+.form-title{
+	display: flex;
+	orientation: landscape;
+	justify-content: space-between;
+	color: wheat;
+}
+
+.form-entries{
+	justify-content: space-between;
+	color: wheat;
+}
+
 .timeline-slider-container {
 	z-index: 9;
 	background-color: rgba(0, 0, 0, 0.5);
