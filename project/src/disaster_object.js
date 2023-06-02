@@ -26,12 +26,16 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
 
     class DisasterActor {
         constructor(x, y, z, scale, c_color) {
+            this.visible = true
+            this.type = 'Earthquake'
             this.update(x, y, z, scale, c_color)
         }
 
         // TODO: mesh should also be updateable
-        update(x, y, z, scale, c_color, set_passive = true) {
+        update(x, y, z, scale, c_color, type, set_passive = true, visible = true) {
             this.color = c_color
+            this.type = type
+            this.visible = visible
             if (set_passive) {
                 this.passive_color = c_color
             }
@@ -71,7 +75,7 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
         }
 
         set_scale(scale) {
-            this.update(this.position[0], this.position[1], this.position[2], scale, this.color, false)
+            this.update(this.position[0], this.position[1], this.position[2], scale, this.color, this.type, false, this.visible)
         }
 
         set_blueprint_index(index) {

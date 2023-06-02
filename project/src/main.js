@@ -95,13 +95,21 @@ const HOVER_MAX_DIST = 0.00125
 const MOUSE_STEP_SIZE = 0.325
 const MOUSE_ROT_STEP_SIZE = 1.
 
-let temp = document.getElementsByName("disaster_checkboxes")
-temp.forEach((checkbox) => {
+let checkboxes = document.getElementsByName("disaster_checkboxes")
+checkboxes.forEach((checkbox) => {
 	checkbox.addEventListener("change", (ev) => {
-		console.log(checkbox.id, ev.target.checked)
+		filter_disaster_list(checkbox.id, ev.target.checked)
 	})
 })
 
+
+function filter_disaster_list(type, visible){
+	disaster_list.forEach((disaster) => {
+		if (disaster.type == type){
+			disaster.visible = visible
+		}
+	})
+}
 
 document.addEventListener('mousemove', e => {
 	let min_dim = Math.min(window.innerWidth, window.innerHeight)
@@ -224,6 +232,10 @@ function toggle_hover(on) {
 	let bp = blueprint_list[selected_blueprint_index]
 	bp.event_indexes.forEach(ind => {
 		let hovered = disaster_pool[ind]
+		if(!hovered.visible){
+			on = false
+			return
+		}
 		hovered.set_color(on ? vec3.fromValues(1., 1., 1.) : hovered.passive_color)
 		hovered.set_scale(on ? 0.05 : 0.03)
 	})
@@ -271,6 +283,7 @@ function receive_disaster_blueprints(disaster_blueprints) {
 
 	// Reuse the objects from the pool
 	let cnt = 0
+	console.log("Updating disasters")
 	blueprint_list.forEach((bp, bp_index) => {
 		let event_indexes = []
 
@@ -279,12 +292,12 @@ function receive_disaster_blueprints(disaster_blueprints) {
 			event_indexes.push(cnt)
 			cnt++
 
-			dis.update(coord_triplet[0], coord_triplet[1], coord_triplet[2], bp.scale, disaster_colors[bp.color_index])
+			dis.update(coord_triplet[0], coord_triplet[1], coord_triplet[2], bp.scale, disaster_colors[bp.color_index], bp.color_index, true, document.getElementById(bp.color_index).checked)
 			dis.set_blueprint_index(bp_index)
 			disaster_list.push(dis)
-
 			let chunk_index = get_chunk(dis.position)
 			chunks[chunk_index[0]][chunk_index[1]][chunk_index[2]].push(dis)
+			
 		})
 
 		blueprint_list[bp_index].event_indexes = event_indexes
@@ -450,5 +463,9 @@ regl.frame((frame) => {
 		mouse.draw(globe_info)
 	}
 
-	disaster_list.forEach(obj => obj.draw(globe_info))
+	disaster_list.forEach(obj => {
+		if (obj.visible) {
+			obj.draw(globe_info)
+		}
+	})
 })
