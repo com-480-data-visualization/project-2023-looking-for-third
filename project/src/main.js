@@ -26,8 +26,11 @@ const tooltip_subtype = document.getElementById("event-subtype")
 const tooltip_duration = document.getElementById("event-duration")
 const tooltip_country = document.getElementById("event-country")
 const tooltip_locations = document.getElementById("event-locations")
+const tooltip_locations_row = document.getElementById("event-locations-row")
 const tooltip_affected = document.getElementById("event-affected")
+const tooltip_affected_row = document.getElementById("event-affected-row")
 const tooltip_deaths = document.getElementById("event-deaths")
+const tooltip_deaths_row = document.getElementById("event-deaths-row")
 
 document.getElementById("our-timeline-slider").addEventListener("input", (ev) => {
 	// Update variable used for visualization
@@ -224,11 +227,15 @@ function toggle_hover(on) {
 	if (on) {
 		tooltip_type.innerHTML = bp.Type
 		tooltip_subtype.innerHTML = bp.Subtype
+		tooltip_subtype.style.display = (bp.Subtype == null || bp.Subtype == bp.Type) ? 'none' : 'block'
 		tooltip_duration.innerHTML = bp['Start Year']
 		tooltip_country.innerHTML = bp.Country
 		tooltip_locations.innerHTML = bp.Location
+		tooltip_locations_row.style.display = bp.Location == null ? 'none' : 'block'
 		tooltip_affected.innerHTML = bp['Total Affected']
+		tooltip_affected_row.style.display = bp['Total Affected'] == null ? 'none' : 'block'
 		tooltip_deaths.innerHTML = bp['Total Deaths']
+		tooltip_deaths_row.style.display = bp['Total Deaths'] == null ? 'none' : 'block'
 	}
 }
 
