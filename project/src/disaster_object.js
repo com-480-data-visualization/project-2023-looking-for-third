@@ -47,6 +47,8 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
             vec3.normalize(normal, normal)
             vec3.normalize(globe_normal, globe_normal)
 
+            this.position = globe_normal
+
             // Find the rotation axis
             const rot_axis = vec3.create()
             vec3.cross(rot_axis, normal, globe_normal)
@@ -59,6 +61,14 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
             this.mat_model_to_world = mat4.translate(mat_model_to_world, mat_model_to_world, globe_normal)
             this.mat_model_to_world = mat4.scale(mat_model_to_world, mat_model_to_world, [scale, scale, scale])
             this.mat_model_to_world = mat4.rotate(this.mat_model_to_world, this.mat_model_to_world, angle, rot_axis)
+        }
+
+        set_color(c_color) {
+            this.color = c_color
+        }
+
+        set_scale(scale) {
+            this.update(this.position[0], this.position[1], this.position[2], scale, this.color)
         }
 
         draw({ mat_projection, mat_view }) {

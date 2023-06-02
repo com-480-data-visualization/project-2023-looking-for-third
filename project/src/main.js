@@ -16,7 +16,7 @@ const STEP_SIZE = 0.005
 const ROT_STEP_SIZE = 0.1
 const MESH_RESOLUTION = 64
 
-const SHOW_MOUSE = true
+const SHOW_MOUSE = false
 
 let currentYear = 2000;
 
@@ -80,6 +80,8 @@ let mouse_offset_angle = 0.
 // Once the mouse goes to the corners the desync becomes very bad, cause of the curvature of the Earth
 let mouse_coords = vec3.fromValues(-0.71, -0.71, 0.)
 const mouse = init_disaster(regl, resources, mouse_coords[0], mouse_coords[1], mouse_coords[2], 0.25, cube_mesh, vec3.fromValues(0.3, 0.3, 1.))
+let selected_event_index = [-1, -1, -1, -1]
+const HOVER_MAX_DIST = 0.00125
 
 const MOUSE_STEP_SIZE = 0.325
 const MOUSE_ROT_STEP_SIZE = 1.
@@ -124,8 +126,95 @@ function update_mouse() {
 	// Sideways rotate the mouse around the ghost
 	vec3.transformMat4(mouse_coords, mouse_coords, side_rot_mat)
 
+	// Get the chunk mouse is currently in
+	let current_chunk = get_chunk(mouse_coords)
+
+	// Traverse neighbourhood chunks and update which event we are hovering
+	let closest_id = [-1, -1, -1, -1]
+	let closest_dist
+	for (let di = -1; di <= 1; di++) {
+		let index1 = current_chunk[0] + di
+		if (index1 < 0 || index1 > 7) {
+			continue
+		}
+
+		for (let dj = -1; dj <= 1; dj++) {
+			let index2 = current_chunk[1] + dj
+			if (index2 < 0 || index2 > 7) {
+				continue
+			}
+
+			for (let dk = -1; dk <= 1; dk++) {
+				let index3 = current_chunk[2] + dk
+				if (index3 < 0 || index3 > 7) {
+					continue
+				}
+
+				let curr_ch = chunks[index1][index2][index3]
+				for (let i = 0; i < curr_ch.length; i++) {
+					let event = curr_ch[i]
+					let dist = vec3.squaredDistance(mouse_coords, event.position)
+					if (dist <= HOVER_MAX_DIST && (closest_id[0] == -1 || dist < closest_dist)) {
+						closest_id = [index1, index2, index3, i]
+						closest_dist = dist
+					}
+				}
+			}
+		}
+	}
+
+	// Update hover status
+	if (closest_id[0] != selected_event_index[0] || closest_id[1] != selected_event_index[1] || closest_id[2] != selected_event_index[2] || closest_id[3] != selected_event_index[3]) {
+		reset_hover_status()
+
+		if (closest_id[0] != -1) {
+			selected_event_index = closest_id
+			toggle_hover(true)
+		}
+	}
+
 	// Update the mouse object
 	mouse.update(mouse_coords[0], mouse_coords[1], mouse_coords[2], 0.25, vec3.fromValues(0.3, 0.3, 1.))
+}
+
+function reset_hover_status(lazy = false) {
+	if (!lazy && selected_event_index[0] != -1) {
+		toggle_hover(false)
+	}
+
+	selected_event_index = [-1, -1, -1, -1]
+}
+
+function get_chunk_1d(x) {
+	// Used Min and Max to ensure bounds
+	return Math.min(7, Math.max(0, Math.floor((x + 1) / 0.25)))
+}
+
+function get_chunk(position) {
+	return [get_chunk_1d(position[0]), get_chunk_1d(position[1]), get_chunk_1d(position[2])]
+}
+
+function empty_chunks() {
+	return Array(8).fill().map(() => Array(8).fill().map(() => Array(8).fill().map(() => [])))
+}
+
+function toggle_hover(on) {
+	let hovered = chunks[selected_event_index[0]][selected_event_index[1]][selected_event_index[2]][selected_event_index[3]]
+	hovered.set_color(on ? vec3.fromValues(1., 1., 1.) : vec3.fromValues(1., 0., 0.))
+	hovered.set_scale(on ? 0.05 : 0.03)
+}
+
+function log_chunk_counts() {
+	for (let i = 0; i < 8; i++) {
+		let s = i + ': '
+		for (let j = 0; j < 8; j++) {
+			for (let k = 0; k < 8; k++) {
+				s += ' ' + chunks[i][j][k].length
+			}
+			s += '\t'
+		}
+		console.log(s)
+	}
 }
 
 // Example of how to initialize a disaster
@@ -137,6 +226,10 @@ function update_mouse() {
 function receive_disaster_blueprints(disaster_blueprints) {
 	// Dump the old disasters
 	disaster_list = []
+	chunks = empty_chunks()
+
+	// Reset hover status
+	reset_hover_status(true)
 
 	// Reuse the objects from the pool
 	let cnt = 0
@@ -146,11 +239,18 @@ function receive_disaster_blueprints(disaster_blueprints) {
 
 		dis.update(bp.x, bp.y, bp.z, bp.scale, disaster_colors[bp.color_index])
 		disaster_list.push(dis)
+
+		let chunk_index = get_chunk(dis.position)
+		chunks[chunk_index[0]][chunk_index[1]][chunk_index[2]].push(dis)
 	});
+
+	// log_chunk_counts()
 }
 
 // List of DisasterActor objects to be rendered for currently selected year
 let disaster_list = []
+// Same list, only distributed into chunks to make finding the closest event faster
+let chunks = empty_chunks()
 // List of DisasterActor to be reused - optimizing on allocation/deallocation
 let disaster_pool = []
 for (let i = 0; i < 2500; i++) {
