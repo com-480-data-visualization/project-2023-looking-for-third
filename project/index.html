@@ -59,13 +59,27 @@
 
 	<div id="event-tooltip" class="tooltip-container">
 		<div class="tooltip-body">
-			<div id="event-type">Drought</div>
-			<div id="event-subtype">Drought</div>
-			<div id="event-duration">1900 - 1900</div>
-			<div id="event-country">India</div>
-			<div id="event-locations">Bengal</div>
-			<div id="event-affected">null</div>
-			<div id="event-deaths">1250000</div>
+			<div id="event-type" class="tooltip-header">Drought</div>
+			<div id="event-subtype" class="tooltip-closer">Drought</div>
+			<div id="event-duration" class="tooltip-closer">1900 - 1900</div>
+			<table class="tooltip-table">
+				<tr>
+					<td>Country:</td>
+					<td id="event-country">India</td>
+				</tr>
+				<tr id="event-locations-row">
+					<td>Locations:</td>
+					<td id="event-locations">Bengal</td>
+				</tr>
+				<tr id="event-affected-row">
+					<td>Affected:</td>
+					<td id="event-affected">null</td>
+				</tr>
+				<tr id="event-deaths-row">
+					<td>Deaths:</td>
+					<td id="event-deaths">1250000</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 

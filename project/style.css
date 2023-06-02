@@ -158,16 +158,30 @@ The various units of measurement available in CSS:
 	width: fit-content;
 	height: fit-content;
 	position: absolute;
-	background-color: rgba(0, 0, 0, 0.5);
-	padding: 0.4em 0.8em;
-	border-radius: 0.4em;
+	padding: 0.5em;
 	display: none;
 }
 
 .tooltip-body {
 	color: wheat;
 	width: fit-content;
+	max-width: 400px;
 	height: fit-content;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 0.4em 0.8em;
+	border-radius: 0.4em;
+}
+
+.tooltip-header {
+	font-size: 1.2em;
+}
+
+.tooltip-closer {
+	font-size: 0.8em;
+}
+
+.tooltip-table {
+	font-size: 0.8em;
 }
 
 #plot {

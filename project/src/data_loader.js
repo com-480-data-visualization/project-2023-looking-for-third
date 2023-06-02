@@ -119,7 +119,7 @@ function construct_from_disaster_array(disasters) {
             "mesh_index": 0,
             "color_index": row.Type,
             "Type": row.Type,
-            "Subtype": row.subtype,
+            "Subtype": row.Subtype,
             "Country": row.Country,
             "Location": row.Location,
             "Start Year": row["Start Year"],
