@@ -4,7 +4,7 @@ uniform vec3 disaster_color;
 
 varying vec3 v_normal;
 
-const vec3 dir_to_light = normalize(vec3(-1., -1., 0.));
+const vec3 dir_to_light = normalize(vec3(0., 0., -1.));
 const vec3 ambient = vec3(0.1, 0.1, 0.1);
 void main() {
     // Compute ambient component

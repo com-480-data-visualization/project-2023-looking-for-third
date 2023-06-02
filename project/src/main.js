@@ -6,7 +6,7 @@ import { createSphere } from "./custom_globe_generator.js"
 import { init_globe } from "./custom_globe_renderer.js"
 import { icg_mesh_load_obj } from "../lib/icg_libs/icg_mesh.js"
 import { init_plane, init_plane_camera } from "./plane_renderer.js"
-import { load_data, log_with_timestamp } from "./data_loader.js"
+import { load_data, log_with_timestamp, disaster_colors } from "./data_loader.js"
 import { init_disaster } from "./disaster_object.js"
 import { angle } from "../lib/gl-matrix_3.3.0/esm/vec2.js"
 
@@ -144,7 +144,7 @@ function receive_disaster_blueprints(disaster_blueprints) {
 		let dis = disaster_pool[cnt]
 		cnt++
 
-		dis.update(bp.x, bp.y, bp.z, bp.scale, vec3.fromValues(1., 0., 0.))
+		dis.update(bp.x, bp.y, bp.z, bp.scale, disaster_colors[bp.color_index])
 		disaster_list.push(dis)
 	});
 }

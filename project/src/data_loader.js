@@ -3,6 +3,31 @@ import { toRadian } from "../lib/gl-matrix_3.3.0/esm/common.js"
 // TODO: would be used for caching
 // let disaster_dict = {}
 
+// Colors for each disaster type:
+export const disaster_colors = {
+    // Yellow
+    "Drought": [0.8784, 0.8274, 0.098],
+    // Brown
+    "Earthquake": [0.3294, 0.145, 0.0588],
+    // Black
+    "Volcanic activity": [0.0, 0.0, 0.0],
+    // Purple
+    "Mass movement": [136./255., 0./255., 255./255.],
+    // Light blue
+    "Storm": [0.1569, 0.7765, 0.8196],
+    // Dark blue
+    "Flood": [0.0275, 0.1608, 0.5608],
+    // Bright green
+    "Epidemic": [4./255., 255./255., 0./255.],
+    // Light grey
+    "Landslide": [180./255., 180./255., 180./255.],
+    // Orange
+    "Wildfire": [0.9686, 0.3294, 0.0784],
+    // Magenta
+    "Extreme temperature": [0.8, 0.0471, 0.7373],
+
+}
+
 function from_lat_lng_to_x_y_z(lat_in_degrees, lng_in_degrees) {
     let lat = toRadian(lat_in_degrees)
     let lng = toRadian(lng_in_degrees + 180) // we add 180 in order to fix the fact that the map's 0 is in the pacific
@@ -74,6 +99,9 @@ function construct_from_disaster_array(disasters) {
     let disaster_blueprint_list = []
 
     disasters.forEach(row => {
+        if (!(row['Type'] in disaster_colors)) {
+            return
+        }
         let extracted_coord_data = extract_coords(row)
         let coords_raw = extracted_coord_data[1]
 
@@ -92,7 +120,7 @@ function construct_from_disaster_array(disasters) {
                 "z": coord_pair[2],
                 "scale": 0.03,
                 "mesh_index": 0,
-                "color_index": 0,
+                "color_index": row.Type,
             })
         })
     })
