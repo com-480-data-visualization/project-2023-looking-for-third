@@ -20,6 +20,15 @@ const SHOW_MOUSE = false
 
 let currentYear = 2000;
 
+const event_tooltip = document.getElementById("event-tooltip")
+const tooltip_type = document.getElementById("event-type")
+const tooltip_subtype = document.getElementById("event-subtype")
+const tooltip_duration = document.getElementById("event-duration")
+const tooltip_country = document.getElementById("event-country")
+const tooltip_locations = document.getElementById("event-locations")
+const tooltip_affected = document.getElementById("event-affected")
+const tooltip_deaths = document.getElementById("event-deaths")
+
 document.getElementById("our-timeline-slider").addEventListener("input", (ev) => {
 	// Update variable used for visualization
 	currentYear = ev.target.value;
@@ -80,7 +89,7 @@ let mouse_offset_angle = 0.
 // Once the mouse goes to the corners the desync becomes very bad, cause of the curvature of the Earth
 let mouse_coords = vec3.fromValues(-0.71, -0.71, 0.)
 const mouse = init_disaster(regl, resources, mouse_coords[0], mouse_coords[1], mouse_coords[2], 0.25, cube_mesh, vec3.fromValues(0.3, 0.3, 1.))
-let selected_event_index = [-1, -1, -1, -1]
+let selected_blueprint_index = -1
 const HOVER_MAX_DIST = 0.00125
 
 const MOUSE_STEP_SIZE = 0.325
@@ -106,6 +115,10 @@ document.addEventListener('mousemove', e => {
 	}
 
 	update_mouse()
+
+	// Update tooltip position
+	event_tooltip.style.left = (e.clientX + 10) + 'px'
+	event_tooltip.style.bottom = (window.innerHeight - e.clientY + 10) + 'px'
 }, false)
 
 function update_mouse() {
@@ -139,7 +152,7 @@ function update_mouse() {
 	let current_chunk = get_chunk(mouse_coords)
 
 	// Traverse neighbourhood chunks and update which event we are hovering
-	let closest_id = [-1, -1, -1, -1]
+	let closest_id = -1
 	let closest_dist
 	for (let di = -1; di <= 1; di++) {
 		let index1 = current_chunk[0] + di
@@ -163,8 +176,8 @@ function update_mouse() {
 				for (let i = 0; i < curr_ch.length; i++) {
 					let event = curr_ch[i]
 					let dist = vec3.squaredDistance(mouse_coords, event.position)
-					if (dist <= HOVER_MAX_DIST && (closest_id[0] == -1 || dist < closest_dist)) {
-						closest_id = [index1, index2, index3, i]
+					if (dist <= HOVER_MAX_DIST && (closest_id == -1 || dist < closest_dist)) {
+						closest_id = event.blueprint_index
 						closest_dist = dist
 					}
 				}
@@ -173,11 +186,11 @@ function update_mouse() {
 	}
 
 	// Update hover status
-	if (closest_id[0] != selected_event_index[0] || closest_id[1] != selected_event_index[1] || closest_id[2] != selected_event_index[2] || closest_id[3] != selected_event_index[3]) {
+	if (closest_id != selected_blueprint_index) {
 		reset_hover_status()
 
-		if (closest_id[0] != -1) {
-			selected_event_index = closest_id
+		if (closest_id != -1) {
+			selected_blueprint_index = closest_id
 			toggle_hover(true)
 		}
 	}
@@ -187,11 +200,11 @@ function update_mouse() {
 }
 
 function reset_hover_status(lazy = false) {
-	if (!lazy && selected_event_index[0] != -1) {
+	if (!lazy && selected_blueprint_index != -1) {
 		toggle_hover(false)
 	}
 
-	selected_event_index = [-1, -1, -1, -1]
+	selected_blueprint_index = -1
 }
 
 function get_chunk_1d(x) {
@@ -208,9 +221,24 @@ function empty_chunks() {
 }
 
 function toggle_hover(on) {
-	let hovered = chunks[selected_event_index[0]][selected_event_index[1]][selected_event_index[2]][selected_event_index[3]]
-	hovered.set_color(on ? vec3.fromValues(1., 1., 1.) : hovered.passive_color)
-	hovered.set_scale(on ? 0.05 : 0.03)
+	let bp = blueprint_list[selected_blueprint_index]
+	bp.event_indexes.forEach(ind => {
+		let hovered = disaster_pool[ind]
+		hovered.set_color(on ? vec3.fromValues(1., 1., 1.) : hovered.passive_color)
+		hovered.set_scale(on ? 0.05 : 0.03)
+	})
+
+	event_tooltip.style.display = on ? 'block' : 'none';
+
+	if (on) {
+		tooltip_type.innerHTML = bp.Type
+		tooltip_subtype.innerHTML = bp.Subtype
+		tooltip_duration.innerHTML = bp['Start Year']
+		tooltip_country.innerHTML = bp.Country
+		tooltip_locations.innerHTML = bp.Location
+		tooltip_affected.innerHTML = bp['Total Affected']
+		tooltip_deaths.innerHTML = bp['Total Deaths']
+	}
 }
 
 function log_chunk_counts() {
@@ -234,6 +262,7 @@ function log_chunk_counts() {
 
 function receive_disaster_blueprints(disaster_blueprints) {
 	// Dump the old disasters
+	blueprint_list = disaster_blueprints
 	disaster_list = []
 	chunks = empty_chunks()
 
@@ -242,20 +271,30 @@ function receive_disaster_blueprints(disaster_blueprints) {
 
 	// Reuse the objects from the pool
 	let cnt = 0
-	disaster_blueprints.forEach(bp => {
-		let dis = disaster_pool[cnt]
-		cnt++
+	blueprint_list.forEach((bp, bp_index) => {
+		let event_indexes = []
 
-		dis.update(bp.x, bp.y, bp.z, bp.scale, disaster_colors[bp.color_index])
-		disaster_list.push(dis)
+		bp.coords.forEach(coord_triplet => {
+			let dis = disaster_pool[cnt]
+			event_indexes.push(cnt)
+			cnt++
 
-		let chunk_index = get_chunk(dis.position)
-		chunks[chunk_index[0]][chunk_index[1]][chunk_index[2]].push(dis)
-	});
+			dis.update(coord_triplet[0], coord_triplet[1], coord_triplet[2], bp.scale, disaster_colors[bp.color_index])
+			dis.set_blueprint_index(bp_index)
+			disaster_list.push(dis)
+
+			let chunk_index = get_chunk(dis.position)
+			chunks[chunk_index[0]][chunk_index[1]][chunk_index[2]].push(dis)
+		})
+
+		blueprint_list[bp_index].event_indexes = event_indexes
+	})
 
 	// log_chunk_counts()
 }
 
+// List of Disaster Blueprints
+let blueprint_list = []
 // List of DisasterActor objects to be rendered for currently selected year
 let disaster_list = []
 // Same list, only distributed into chunks to make finding the closest event faster

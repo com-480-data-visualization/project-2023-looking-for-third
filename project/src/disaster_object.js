@@ -74,6 +74,10 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
             this.update(this.position[0], this.position[1], this.position[2], scale, this.color, false)
         }
 
+        set_blueprint_index(index) {
+            this.blueprint_index = index
+        }
+
         draw({ mat_projection, mat_view }) {
 
             mat4_matmul_many(this.mat_model_view, mat_view, this.mat_model_to_world)

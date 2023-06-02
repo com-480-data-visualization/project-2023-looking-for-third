@@ -12,15 +12,15 @@ export const disaster_colors = {
     // Black
     "Volcanic activity": [0.0, 0.0, 0.0],
     // Purple
-    "Mass movement": [136./255., 0./255., 255./255.],
+    "Mass movement": [136. / 255., 0. / 255., 255. / 255.],
     // Light blue
     "Storm": [0.1569, 0.7765, 0.8196],
     // Dark blue
     "Flood": [0.0275, 0.1608, 0.5608],
     // Bright green
-    "Epidemic": [4./255., 255./255., 0./255.],
+    "Epidemic": [4. / 255., 255. / 255., 0. / 255.],
     // Light grey
-    "Landslide": [180./255., 180./255., 180./255.],
+    "Landslide": [180. / 255., 180. / 255., 180. / 255.],
     // Orange
     "Wildfire": [0.9686, 0.3294, 0.0784],
     // Magenta
@@ -113,15 +113,23 @@ function construct_from_disaster_array(disasters) {
             coords.push(from_lat_lng_to_x_y_z(lat, lng))
         })
 
-        coords.forEach(coord_pair => {
-            disaster_blueprint_list.push({
-                "x": coord_pair[0],
-                "y": coord_pair[1],
-                "z": coord_pair[2],
-                "scale": 0.03,
-                "mesh_index": 0,
-                "color_index": row.Type,
-            })
+        disaster_blueprint_list.push({
+            "coords": coords,
+            "scale": 0.03,
+            "mesh_index": 0,
+            "color_index": row.Type,
+            "Type": row.Type,
+            "Subtype": row.subtype,
+            "Country": row.Country,
+            "Location": row.Location,
+            "Start Year": row["Start Year"],
+            "Start Month": row["Start Month"],
+            "Start Day": row["Start Day"],
+            "End Year": row["End Year"],
+            "End Month": row["End Month"],
+            "End Day": row["End Day"],
+            "Total Affected": row["Total Affected"],
+            "Total Deaths": row["Total Deaths"],
         })
     })
 
