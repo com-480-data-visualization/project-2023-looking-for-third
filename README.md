@@ -9,7 +9,7 @@
 [Setup and Usage](#setup) • [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
 # Setup
-In order to setup this project, an HTTP server must be created within the project folder. There are a variety of ways to do so:
+There are two ways of accessing our project, either going to the following [link](https://data-viz-disasters-static-site.onrender.com/) on which it is hosted, or by running the server locally. To run the project locally, the user must setup a HTTP server. This can be done in many ways, but here are two simple approaches to the problem:
 
 ### Live Server Extension
 The live server extension can be installed in VSCode and then the user can go to the [index.html](project/index.html) and click the *Go Live* button at the bottom of the page. The web browser should launch automatically at the right address.
