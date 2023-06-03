@@ -57,6 +57,10 @@ const MOUSE_ROT_STEP_SIZE = 1.
 
 let currentYear = 2000;
 
+// Loading overlay element
+const loading_overlay = document.getElementById("loading-overlay")
+let still_loading = true
+
 // Tooltip elements
 const event_tooltip = document.getElementById("event-tooltip")
 const tooltip_type = document.getElementById("event-type")
@@ -94,7 +98,7 @@ let checkboxes = document.getElementsByName("disaster_checkboxes")
 // Add event listeners to checkboxes
 checkboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", (ev) => {
-		// Update disaster visibility
+        // Update disaster visibility
         filter_disaster_list(checkbox.id, ev.target.checked)
     })
 })
@@ -371,7 +375,7 @@ function toggle_hover(on) {
     bp.event_indexes.forEach(ind => {
         let hovered = disaster_pool[ind]
         if (!hovered.visible) {
-			// If the event is not visible, stop trying to hover it
+            // If the event is not visible, stop trying to hover it
             on = false
             return
         }
@@ -567,23 +571,23 @@ const plane_mat_world_to_cam = init_plane_camera()
  * Main rendering loop
  */
 regl.frame((frame) => {
-	// First execute all the moves (based on key presses)
+    // First execute all the moves (based on key presses)
     executeMoves()
 
-	// Create camera projection matrix
+    // Create camera projection matrix
     mat4.perspective(mat_projection,
         deg_to_rad * 35, // fovy
         frame.framebufferWidth / frame.framebufferHeight, // aspect ratio
         NEAR,
         FAR
     )
-	
-	// Update the light posision based on the view matrix
+
+    // Update the light posision based on the view matrix
     vec3.transformMat4(l_pos, sun_pos, mat_view)
-	// Update the view matrix
+    // Update the view matrix
     mat4.copy(mat_view, mat_world_to_cam)
 
-	// Globe info to be passed to the globe shader (and cube shaders)
+    // Globe info to be passed to the globe shader (and cube shaders)
     const globe_info = {
         mat_projection: mat_projection,
         mat_view: mat_view,
@@ -594,35 +598,40 @@ regl.frame((frame) => {
         l_pos: l_pos,
     }
 
-	// Clear the screen and set the background color
+    // Clear the screen and set the background color
     regl.clear({
         color: [0.1, 0.1, 0.1, 1.]
     })
 
-	// Draw the globe
+    // Draw the globe
     globe.draw(globe_info)
 
-	// Draw the disasters
-	disaster_list.forEach(obj => {
+    // Draw the disasters
+    disaster_list.forEach(obj => {
         if (obj.visible) {
             obj.draw(globe_info)
         }
     })
 
-	// Information for the plane shader (rendered with different "camera" to always be centered)
+    // Information for the plane shader (rendered with different "camera" to always be centered)
     const plane_info = {
         mat_projection: mat_projection,
         mat_view: plane_mat_world_to_cam,
         plane_texture: resources.plane_texture,
     }
 
-	// Draw the plane
+    // Draw the plane
     plane.draw(plane_info)
 
-	// Draw the mouse
+    // Draw the mouse
     if (SHOW_MOUSE) {
         mouse.draw(globe_info)
     }
 
-    
+    // Hide loading overlay, if it's still displayed
+    if (still_loading) {
+        loading_overlay.style.display = 'none'
+        still_loading = false
+    }
+
 })
