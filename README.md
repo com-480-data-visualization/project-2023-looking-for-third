@@ -6,7 +6,7 @@
 | Andrija Kolić | 336957 |
 | Ahmed Reda Seghrouchni | 297848 |
 
-[Setup and Usage](#setup) • [Milestone 1](#milstone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Setup and Usage](#setup) • [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
 # Setup
 In order to setup this project, an HTTP server must be created within the project folder. There are a variety of ways to do so:
