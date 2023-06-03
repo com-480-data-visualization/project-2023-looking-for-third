@@ -57,6 +57,10 @@ const MOUSE_ROT_STEP_SIZE = 1.
 
 let currentYear = 2000;
 
+// Loading overlay element
+const loading_overlay = document.getElementById("loading-overlay")
+let still_loading = true
+
 // Tooltip elements
 const event_tooltip = document.getElementById("event-tooltip")
 const tooltip_type = document.getElementById("event-type")
@@ -94,7 +98,7 @@ let checkboxes = document.getElementsByName("disaster_checkboxes")
 // Add event listeners to checkboxes
 checkboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", (ev) => {
-		// Update disaster visibility
+        // Update disaster visibility
         filter_disaster_list(checkbox.id, ev.target.checked)
     })
 })
@@ -117,6 +121,11 @@ document.addEventListener('mousemove', e => {
     event_tooltip.style.left = (e.clientX + 10) + 'px'
     event_tooltip.style.bottom = (window.innerHeight - e.clientY + 10) + 'px'
 }, false)
+
+// Mouse scroll wheel listener - scroll tooltip 'Locations' cell even when the mouse is outside
+document.addEventListener('wheel', e => {
+    tooltip_locations.scrollBy(e.deltaX * 0.5, e.deltaY * 0.5)
+})
 
 /**
  * Event listeners for key presses
@@ -364,6 +373,26 @@ function empty_chunks() {
 
 /**
  * TODO: Add documentation (Andria)
+ * @returns 
+ */
+function pad_to_two_digits(x) {
+    return x < 10 ? '0' + x : x;
+}
+
+/**
+ * TODO: Add documentation (Andria)
+ * @returns 
+ */
+function format_partial_date(day, month, year) {
+    let s = ''
+    s += day == null ? '' : pad_to_two_digits(day) + '/'
+    s += month == null ? '' : pad_to_two_digits(month) + '/'
+    s += year
+    return s
+}
+
+/**
+ * TODO: Add documentation (Andria)
  * @param {Boolean} on Whether to turn the hover on or off
  */
 function toggle_hover(on) {
@@ -371,7 +400,7 @@ function toggle_hover(on) {
     bp.event_indexes.forEach(ind => {
         let hovered = disaster_pool[ind]
         if (!hovered.visible) {
-			// If the event is not visible, stop trying to hover it
+            // If the event is not visible, stop trying to hover it
             on = false
             return
         }
@@ -385,14 +414,17 @@ function toggle_hover(on) {
         tooltip_type.innerHTML = bp.Type
         tooltip_subtype.innerHTML = bp.Subtype
         tooltip_subtype.style.display = (bp.Subtype == null || bp.Subtype == bp.Type) ? 'none' : 'block'
-        tooltip_duration.innerHTML = bp['Start Year']
+        let start = format_partial_date(bp['Start Day'], bp['Start Month'], bp['Start Year'])
+        let end = format_partial_date(bp['End Day'], bp['End Month'], bp['End Year'])
+        tooltip_duration.innerHTML = (start == end) ? start : (start + ' - ' + end);
+        tooltip_duration.style.display = (start == bp['Start Year']) ? 'none' : 'block'
         tooltip_country.innerHTML = bp.Country
         tooltip_locations.innerHTML = bp.Location
-        tooltip_locations_row.style.display = bp.Location == null ? 'none' : 'block'
+        tooltip_locations_row.style.display = bp.Location == null ? 'none' : 'table-row'
         tooltip_affected.innerHTML = bp['Total Affected']
-        tooltip_affected_row.style.display = bp['Total Affected'] == null ? 'none' : 'block'
+        tooltip_affected_row.style.display = bp['Total Affected'] == null ? 'none' : 'table-row'
         tooltip_deaths.innerHTML = bp['Total Deaths']
-        tooltip_deaths_row.style.display = bp['Total Deaths'] == null ? 'none' : 'block'
+        tooltip_deaths_row.style.display = bp['Total Deaths'] == null ? 'none' : 'table-row'
     }
 }
 
@@ -567,23 +599,23 @@ const plane_mat_world_to_cam = init_plane_camera()
  * Main rendering loop
  */
 regl.frame((frame) => {
-	// First execute all the moves (based on key presses)
+    // First execute all the moves (based on key presses)
     executeMoves()
 
-	// Create camera projection matrix
+    // Create camera projection matrix
     mat4.perspective(mat_projection,
         deg_to_rad * 35, // fovy
         frame.framebufferWidth / frame.framebufferHeight, // aspect ratio
         NEAR,
         FAR
     )
-	
-	// Update the light posision based on the view matrix
+
+    // Update the light posision based on the view matrix
     vec3.transformMat4(l_pos, sun_pos, mat_view)
-	// Update the view matrix
+    // Update the view matrix
     mat4.copy(mat_view, mat_world_to_cam)
 
-	// Globe info to be passed to the globe shader (and cube shaders)
+    // Globe info to be passed to the globe shader (and cube shaders)
     const globe_info = {
         mat_projection: mat_projection,
         mat_view: mat_view,
@@ -594,35 +626,40 @@ regl.frame((frame) => {
         l_pos: l_pos,
     }
 
-	// Clear the screen and set the background color
+    // Clear the screen and set the background color
     regl.clear({
         color: [0.1, 0.1, 0.1, 1.]
     })
 
-	// Draw the globe
+    // Draw the globe
     globe.draw(globe_info)
 
-	// Draw the disasters
-	disaster_list.forEach(obj => {
+    // Draw the disasters
+    disaster_list.forEach(obj => {
         if (obj.visible) {
             obj.draw(globe_info)
         }
     })
 
-	// Information for the plane shader (rendered with different "camera" to always be centered)
+    // Information for the plane shader (rendered with different "camera" to always be centered)
     const plane_info = {
         mat_projection: mat_projection,
         mat_view: plane_mat_world_to_cam,
         plane_texture: resources.plane_texture,
     }
 
-	// Draw the plane
+    // Draw the plane
     plane.draw(plane_info)
 
-	// Draw the mouse
+    // Draw the mouse
     if (SHOW_MOUSE) {
         mouse.draw(globe_info)
     }
 
-    
+    // Hide loading overlay, if it's still displayed
+    if (still_loading) {
+        loading_overlay.style.display = 'none'
+        still_loading = false
+    }
+
 })

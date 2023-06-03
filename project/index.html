@@ -14,52 +14,67 @@
 
 <body>
 
-	
+	<!-- Loading overlay element -->
+	<div id="loading-overlay">
+		<div id="loading-body">
+			<div>Loading</div>
+			<div class="loader"></div>
+		</div>
+	</div>
+
+
 	<!-- Form for selecting which disaster to render. -->
 	<div class="disaster-selection-container">
 		<form id="form">
 			<div class="form-title">
 				<p id=form-prompt>Disasters</p>
 			</div>
-			<div class="form-entries">	
+			<div class="form-entries">
 				<div class="checkbox_drought">
-					<input type="checkbox" id="Drought" name="disaster_checkboxes" value="Drought", checked="checked">
+					<input type="checkbox" id="Drought" name="disaster_checkboxes" value="Drought" , checked="checked">
 					<label for="Drought">Drought</label><br>
 				</div>
 				<div class="checkbox_earthquake">
-					<input type="checkbox" id="Earthquake" name="disaster_checkboxes" value="Earthquake", checked="checked">
+					<input type="checkbox" id="Earthquake" name="disaster_checkboxes" value="Earthquake" ,
+						checked="checked">
 					<label for="Earthquake">Earthquake</label><br>
 				</div>
 				<div class="checkbox_volcanic">
-					<input type="checkbox" id="Volcanic activity" name="disaster_checkboxes" value="Volcanic activity", checked="checked">
+					<input type="checkbox" id="Volcanic activity" name="disaster_checkboxes" value="Volcanic activity" ,
+						checked="checked">
 					<label for="Volcanic activity">Volcanic activity</label><br></dr>
 				</div>
 				<div class="checkbox_mass">
-					<input type="checkbox" id="Mass movement" name="disaster_checkboxes" value="Mass movement", checked="checked">
+					<input type="checkbox" id="Mass movement" name="disaster_checkboxes" value="Mass movement" ,
+						checked="checked">
 					<label for="Mass movement">Mass movement</label><br></dr>
 				</div>
 				<div class="checkbox_storm">
-					<input type="checkbox" id="Storm" name="disaster_checkboxes" value="Storm", checked="checked">
+					<input type="checkbox" id="Storm" name="disaster_checkboxes" value="Storm" , checked="checked">
 					<label for="Storm">Storm</label><br></dr>
 				</div>
 				<div class="checkbox_flood">
-					<input type="checkbox" id="Flood" name="disaster_checkboxes" value="Flood", checked="checked">
+					<input type="checkbox" id="Flood" name="disaster_checkboxes" value="Flood" , checked="checked">
 					<label for="Flood">Flood</label><br></dr>
 				</div>
 				<div class="checkbox_epidemic">
-					<input type="checkbox" id="Epidemic" name="disaster_checkboxes" value="Epidemic", checked="checked">
+					<input type="checkbox" id="Epidemic" name="disaster_checkboxes" value="Epidemic" ,
+						checked="checked">
 					<label for="Epidemic">Epidemic</label><br></dr>
 				</div>
 				<div class="checkbox_landslide">
-						<input type="checkbox" id="Landslide" name="disaster_checkboxes" value="Landslide", checked="checked">
+					<input type="checkbox" id="Landslide" name="disaster_checkboxes" value="Landslide" ,
+						checked="checked">
 					<label for="Landslide">Landslide</label><br></dr>
 				</div>
 				<div class="checkbox_wildfire">
-					<input type="checkbox" id="Wildfire" name="disaster_checkboxes" value="Wildfire", checked="checked">
+					<input type="checkbox" id="Wildfire" name="disaster_checkboxes" value="Wildfire" ,
+						checked="checked">
 					<label for="Wildfire">Wildfire</label><br></dr>
 				</div>
 				<div class="checkbox_extreme">
-					<input type="checkbox" id="Extreme temperature" name="disaster_checkboxes" value="Extreme temperature", checked="checked">
+					<input type="checkbox" id="Extreme temperature" name="disaster_checkboxes"
+						value="Extreme temperature" , checked="checked">
 					<label for="Extreme temperature">Extreme temperature</label>
 				</div>
 
@@ -90,7 +105,9 @@
 				</tr>
 				<tr id="event-locations-row">
 					<td>Locations:</td>
-					<td id="event-locations">Bengal</td>
+					<td>
+						<div id="event-locations" class="scrollable-cell">Bengal</div>
+					</td>
 				</tr>
 				<tr id="event-affected-row">
 					<td>Affected:</td>
