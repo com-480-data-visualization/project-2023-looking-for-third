@@ -6,9 +6,47 @@
 | Andrija Kolić | 336957 |
 | Ahmed Reda Seghrouchni | 297848 |
 
-[Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Setup and Usage](#setup) • [Milestone 1](#milstone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
-## Milestone 1 (7th April, 5pm)
+# Setup
+In order to setup this project, an HTTP server must be created within the project folder. There are a variety of ways to do so:
+
+### Live Server Extension
+The live server extension can be installed in VSCode and then the user can go to the [index.html](project/index.html) and click the *Go Live* button at the bottom of the page. The web browser should launch automatically at the right address.
+
+![Histogram Image](images/golive.png?raw=True "Go Live button")
+
+### Python Server
+Another posibility is to use the built in python http.server command. The user must navigate to the [project](project) folder and launch the server using the following command:
+```
+python3 -m http.server
+```
+A HTTP server will then be launched (normally on port 8000, although it can be set manually), the user then simply has to go to any web navigator and go to [localhost:8000](https://localhost:8000)
+
+# Usage
+## Controls
+In order to control the plane the user must use the **WAD** keys to move nagivate. Just as a normal plane, the user cannot move backwards, and in order to turn the plane must be moving forward. Hence to turn left for example the user must be holding both **W** and **A**.
+
+For additional information about a specific disaster, the user can hover the mouse over any of the locations and the disaster (along with all its locations) will be highlighted and a textbox will appear with additional information.
+
+## UI
+To select which types of disasters should be shown on the screen, two main UI elements exist:
+
+### Timeline Slider
+
+A timeline is displayed at the top of the screen which the user can scroll through to select which year of disasters should be rendered on the globe. Alternatively the user can use the **UP ARROW** and **DOWN ARROW** to increment or decrement the selected year.
+
+### Disaster form
+
+To select which types of disasters are to be displayed on the globe, the user has access to a form at the bottom right of the screen. Any selected disaster will be displayed on the screen, while un-selected ones will not appear. The color of the disasters correspond to the color of the checkboxes in the form.
+
+## Intended use
+Once the user has been informed of the controls, they are free to roam around the globe and explore the various disasters that occured on earth throughout the years.
+
+
+
+# Milestones
+## Milestone 1
 
 **10% of the final grade**
 
@@ -102,17 +140,21 @@ source: https://christophercannon.net/disasters.html
 ### Implementation
 A quick side note about how we intend to implement our project, the aim is to use WebGL along with Javascript to render the mini "game" we plan to create. WebGL is a graphics library that allows rendering through browsers like chrome. Our inspiration for the plane comes from Sebastien Lague as mentioned, however we do not plan to copy his (open source) Unity code but rather recreate a similar interaction with WebGL.
 
-## Milestone 2 (7th May, 5pm)
+## Milestone 2
 
 **10% of the final grade**
 
-Report is at /Milestone2Files/Milestone2_Report.pdf
+Report is [here](Milestone2Files/Milestone2_Report.pdf)
 
-Prototype is in /project/ (described in the report).
+Prototype is described in the report.
 
-## Milestone 3 (4th June, 5pm)
+## Milestone 3
 
 **80% of the final grade**
+
+Process book is [here](Milestone3Files/processbook.pdf)
+
+Screencast is [here](Milestone3Files/screencast.mp4)
 
 
 ## Late policy
