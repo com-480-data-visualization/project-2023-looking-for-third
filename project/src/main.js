@@ -122,6 +122,11 @@ document.addEventListener('mousemove', e => {
     event_tooltip.style.bottom = (window.innerHeight - e.clientY + 10) + 'px'
 }, false)
 
+// Mouse scroll wheel listener - scroll tooltip 'Locations' cell even when the mouse is outside
+document.addEventListener('wheel', e => {
+    tooltip_locations.scrollBy(e.deltaX * 0.5, e.deltaY * 0.5)
+})
+
 /**
  * Event listeners for key presses
  */
@@ -368,6 +373,26 @@ function empty_chunks() {
 
 /**
  * TODO: Add documentation (Andria)
+ * @returns 
+ */
+function pad_to_two_digits(x) {
+    return x < 10 ? '0' + x : x;
+}
+
+/**
+ * TODO: Add documentation (Andria)
+ * @returns 
+ */
+function format_partial_date(day, month, year) {
+    let s = ''
+    s += day == null ? '' : pad_to_two_digits(day) + '/'
+    s += month == null ? '' : pad_to_two_digits(month) + '/'
+    s += year
+    return s
+}
+
+/**
+ * TODO: Add documentation (Andria)
  * @param {Boolean} on Whether to turn the hover on or off
  */
 function toggle_hover(on) {
@@ -389,14 +414,17 @@ function toggle_hover(on) {
         tooltip_type.innerHTML = bp.Type
         tooltip_subtype.innerHTML = bp.Subtype
         tooltip_subtype.style.display = (bp.Subtype == null || bp.Subtype == bp.Type) ? 'none' : 'block'
-        tooltip_duration.innerHTML = bp['Start Year']
+        let start = format_partial_date(bp['Start Day'], bp['Start Month'], bp['Start Year'])
+        let end = format_partial_date(bp['End Day'], bp['End Month'], bp['End Year'])
+        tooltip_duration.innerHTML = (start == end) ? start : (start + ' - ' + end);
+        tooltip_duration.style.display = (start == bp['Start Year']) ? 'none' : 'block'
         tooltip_country.innerHTML = bp.Country
         tooltip_locations.innerHTML = bp.Location
-        tooltip_locations_row.style.display = bp.Location == null ? 'none' : 'block'
+        tooltip_locations_row.style.display = bp.Location == null ? 'none' : 'table-row'
         tooltip_affected.innerHTML = bp['Total Affected']
-        tooltip_affected_row.style.display = bp['Total Affected'] == null ? 'none' : 'block'
+        tooltip_affected_row.style.display = bp['Total Affected'] == null ? 'none' : 'table-row'
         tooltip_deaths.innerHTML = bp['Total Deaths']
-        tooltip_deaths_row.style.display = bp['Total Deaths'] == null ? 'none' : 'block'
+        tooltip_deaths_row.style.display = bp['Total Deaths'] == null ? 'none' : 'table-row'
     }
 }
 

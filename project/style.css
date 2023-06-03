@@ -228,6 +228,11 @@ The various units of measurement available in CSS:
 	font-size: 0.8em;
 }
 
+.scrollable-cell {
+	overflow-y: auto;
+	max-height: 100px;
+}
+
 #loading-overlay {
 	z-index: 10;
 	position: absolute;
