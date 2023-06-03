@@ -1,9 +1,27 @@
+// Autor: Zacharie Mizeret
+
 import {mat3, mat4, vec3} from "../lib/gl-matrix_3.3.0/esm/index.js"
 import {mat4_matmul_many} from "../lib/icg_libs/icg_math.js"
 
 
+/**
+ * Initialize a plane actor ready for REGL rendering pipeline.
+ * 
+ * @param {REGL} regl REGL instance
+ * @param {Object} resources List of all REGL resources
+ * @param {Number} x X coordinate of the plane (in world coordinates)
+ * @param {Number} y Y coordinate of the plane (in world coordinates)
+ * @param {Number} z Z coordinate of the plane (in world coordinates)
+ * @param {Number} scale Scale of the plane mesh
+ * @param {Object} mesh Plane mesh
+ * 
+ * @returns {PlaneActor} Plane actor
+ */
 export function init_plane(regl, resources, x, y, z, scale, mesh){
     const plane_mesh = mesh
+    /**
+     * REGL pipeline for drawing the plane.
+     */
     const pipeline_draw_plane = regl({
         // Pass the vertex positions, normals and uv coordinates to the vertex shader
         attributes: {
@@ -23,6 +41,11 @@ export function init_plane(regl, resources, x, y, z, scale, mesh){
         frag: resources['shaders/plane.frag.glsl'],
     })
 
+    /**
+     * Plane actor class. Has two main functions:
+     * constructor: initializes the plane actor
+     * draw: draws the plane actor
+     */
     class PlaneActor{
         constructor(x, y, z, scale){
             // Create the transformation matrices
@@ -32,10 +55,14 @@ export function init_plane(regl, resources, x, y, z, scale, mesh){
             //Create the normal matrix
             this.mat_normals = mat3.create()
 
+            // Calculate the projection matrix to global coordinates
             this.mat_model_to_world = mat4.translate( mat_model_to_world, mat_model_to_world, [x, y, z])
             this.mat_model_to_world = mat4.scale( mat_model_to_world, mat_model_to_world, [scale, scale, scale])
         }
-
+        /**
+         * Function to draw the plane actor using REGL. All the parameters are taken as needed from the REGL pipeline.
+         * As long as they are provided.
+         */
         draw({mat_projection, mat_view, plane_texture}){
             mat4_matmul_many(this.mat_model_view, mat_view, this.mat_model_to_world)
             mat4_matmul_many(this.mat_mvp, mat_projection, this.mat_model_view)
@@ -53,10 +80,14 @@ export function init_plane(regl, resources, x, y, z, scale, mesh){
             })
         }
     }
-
+    // Return the plane actor
     return new PlaneActor(x, y, z, scale)
 }
 
+/**
+ * Since the plane uses another camera to always render on top of the screen, we need to initialize the look at matrix for that camera.
+ * @returns {mat4} Look at matrix for the plane camera
+ */
 export function init_plane_camera(){
     const cam_pos = vec3.scale(vec3.create(), vec3.normalize(vec3.create(),[0.,0.,-5., 1.]), 2)
     const lookAt = [0.,0.,0., 1.]

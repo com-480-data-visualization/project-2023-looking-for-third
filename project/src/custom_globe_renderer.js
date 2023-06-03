@@ -1,9 +1,22 @@
-import {mat3, mat4, vec3} from "../lib/gl-matrix_3.3.0/esm/index.js"
+//Author: Zacharie Mizeret
+import {mat3, mat4} from "../lib/gl-matrix_3.3.0/esm/index.js"
 import {mat4_matmul_many} from "../lib/icg_libs/icg_math.js"
 
-
+/**
+ * 
+ * @param {REGL} regl REGL instance
+ * @param {*} resources Dictionary of all REGL resources
+ * @param {Number} x X coordinate (in world coordinates)
+ * @param {Number} y Y coordinate (in world coordinates)
+ * @param {Number} z Z coordinate (in world coordinates)
+ * @param {Mesh} mesh Mesh of the globe
+ * @returns Globe actor ready for REGL rendering pipeline
+ */
 export function init_globe(regl, resources, x, y, z, mesh){
     const sphere_mesh = mesh
+    /**
+     * REGL pipeline for drawing the globe.
+     */
     const pipeline_draw_globe = regl({
         // Pass the vertex positions, normals and uv coordinates to the vertex shader
         attributes: {
@@ -27,6 +40,11 @@ export function init_globe(regl, resources, x, y, z, mesh){
         frag: resources['shaders/globe.frag.glsl'],
     })
 
+    /**
+     * Globe actor class. Has two main functions:
+     * constructor: initializes the globe actor
+     * draw: draws the globe actor
+     */
     class GlobeActor{
         constructor(x, y, z){
             // Create the transformation matrices

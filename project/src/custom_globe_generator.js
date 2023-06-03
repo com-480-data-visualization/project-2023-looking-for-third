@@ -1,3 +1,9 @@
+// Author: Zacharie Mizeret (inspired by Computer Graphics course EPFL)
+
+/**
+ * @param {Number} divisions Number of divisions of the sphere
+ * @returns Dictionary with all the mesh information needed for REGL.
+ */
 export function createSphere(divisions){
     const {sin, cos, PI} = Math;
 	const v_resolution = divisions | 0; // tell optimizer this is an int

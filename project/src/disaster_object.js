@@ -1,9 +1,25 @@
+//Author: Zacharie Mizeret (modified by Andria Kolić)
+
 import { mat3, mat4, vec3 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 import { mat4_matmul_many } from "../lib/icg_libs/icg_math.js"
 
-
+/**
+ * 
+ * @param {REGL} regl REGL instance
+ * @param {*} resources Dictionary of all REGL resources
+ * @param {Number} x X coordinate (in world coordinates)
+ * @param {Number} y Y coordinate (in world coordinates)
+ * @param {Number} z Z coordinate (in world coordinates)
+ * @param {Number} scale Scale of the disaster mesh
+ * @param {Mesh} mesh Mesh of the disaster
+ * @param {vec3} color Color of the disaster
+ * @returns {DisasterActor} Disaster actor ready for REGL rendering pipeline
+ */
 export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
     const disaster_mesh = mesh
+    /**
+     * REGL pipeline for drawing the disaster.
+     */
     const pipeline_draw_disaster = regl({
         // Pass the vertex positions, normals and uv coordinates to the vertex shader
         attributes: {
@@ -24,6 +40,11 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
         frag: resources['shaders/disaster.frag.glsl'],
     })
 
+    /**
+     * Disaster actor class. Has two main functions:
+     * constructor: initializes the disaster actor
+     * draw: draws the disaster actor
+     */
     class DisasterActor {
         constructor(x, y, z, scale, c_color) {
             this.visible = true
@@ -31,7 +52,17 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
             this.update(x, y, z, scale, c_color)
         }
 
-        // TODO: mesh should also be updateable
+        /**
+         * 
+         * @param {Number} x X coordinate (in world coordinates)
+         * @param {Number} y Y coordinate (in world coordinates)
+         * @param {Number} z Z coordinate (in world coordinates)
+         * @param {Number} scale Scale of the disaster mesh
+         * @param {vec3} c_color Color of the disaster
+         * @param {String} type Type of the disaster
+         * @param {Boolean} set_passive Whether to set the passive color to the color given
+         * @param {Boolean} visible Whether the disaster is visible
+         */
         update(x, y, z, scale, c_color, type, set_passive = true, visible = true) {
             this.color = c_color
             this.type = type
@@ -70,18 +101,33 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
             this.mat_model_to_world = mat4.rotate(this.mat_model_to_world, this.mat_model_to_world, angle, rot_axis)
         }
 
+        /**
+         * Set the color of the disaster
+         * @param {vec3} c_color Color of the disaster
+         */
         set_color(c_color) {
             this.color = c_color
         }
 
+        /**
+         * Update the scale of the disaster
+         * @param {Number} scale Scale of the disaster mesh
+         */
         set_scale(scale) {
             this.update(this.position[0], this.position[1], this.position[2], scale, this.color, this.type, false, this.visible)
         }
 
+        /**
+         * Set the blueprint index of the disaster.
+         * @param {Number} index Index of the blueprint in the blueprint array
+         */
         set_blueprint_index(index) {
             this.blueprint_index = index
         }
 
+        /**
+         * Draw the disaster actor.
+         */
         draw({ mat_projection, mat_view }) {
 
             mat4_matmul_many(this.mat_model_view, mat_view, this.mat_model_to_world)
@@ -102,5 +148,6 @@ export function init_disaster(regl, resources, x, y, z, scale, mesh, color) {
 
     }
 
+    // Return the disaster actor
     return new DisasterActor(x, y, z, scale, color)
 }

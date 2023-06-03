@@ -1,3 +1,5 @@
+//Author: Andria Kolić
+
 import { toRadian } from "../lib/gl-matrix_3.3.0/esm/common.js"
 
 // TODO: would be used for caching
