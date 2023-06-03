@@ -68,6 +68,50 @@ The various units of measurement available in CSS:
 	right: 1em;
 }
 
+
+.checkbox_drought{
+	accent-color: #E0D319;
+}
+
+
+.checkbox_earthquake{
+	accent-color: #54250F;
+}
+
+.checkbox_volcanic{
+	accent-color: #000000;
+}
+
+.checkbox_mass{
+	accent-color: #8800FF;
+}
+
+.checkbox_storm{
+	accent-color: #28C6D1;
+}
+
+.checkbox_flood{
+	accent-color: #07298F;
+}
+
+.checkbox_epidemic{
+	accent-color: #04FF00;
+}
+
+.checkbox_landslide{
+	accent-color: #B4B4B4;
+}
+
+.checkbox_wildfire{
+	accent-color: #F75414;
+}
+
+.checkbox_extreme{
+	accent-color: #CC0CBC;
+}
+
+
+
 .form-title{
 	display: flex;
 	orientation: landscape;

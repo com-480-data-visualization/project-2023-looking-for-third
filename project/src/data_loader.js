@@ -6,25 +6,25 @@ import { toRadian } from "../lib/gl-matrix_3.3.0/esm/common.js"
 // Colors for each disaster type:
 export const disaster_colors = {
     // Yellow
-    "Drought": [0.8784, 0.8274, 0.098],
+    "Drought": [224./255., 211./255., 25./255.],
     // Brown
-    "Earthquake": [0.3294, 0.145, 0.0588],
+    "Earthquake": [84./255., 37./255., 15./255.],
     // Black
     "Volcanic activity": [0.0, 0.0, 0.0],
     // Purple
     "Mass movement": [136. / 255., 0. / 255., 255. / 255.],
     // Light blue
-    "Storm": [0.1569, 0.7765, 0.8196],
+    "Storm": [40./255., 198./255., 209./255.],
     // Dark blue
-    "Flood": [0.0275, 0.1608, 0.5608],
+    "Flood": [7./255., 41./255., 143./255.],
     // Bright green
     "Epidemic": [4. / 255., 255. / 255., 0. / 255.],
     // Light grey
     "Landslide": [180. / 255., 180. / 255., 180. / 255.],
     // Orange
-    "Wildfire": [0.9686, 0.3294, 0.0784],
+    "Wildfire": [247./255., 84./255., 20./255.],
     // Magenta
-    "Extreme temperature": [0.8, 0.0471, 0.7373],
+    "Extreme temperature": [204./255., 12./255., 188./255.],
 
 }
 
