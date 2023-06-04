@@ -9,7 +9,7 @@ varying vec3 v2f_normals;
 uniform sampler2D plane_texture;
 
 // Constants
-const vec3 dir_to_light = normalize(vec3(0., -1., 0.));
+const vec3 dir_to_light = normalize(vec3(-1., -1., 0.));
 const vec3 ambient = vec3(0.1, 0.1, 0.1);
 const vec3 sun_color = vec3(0.85, 0.85, 0.85);
 
