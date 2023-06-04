@@ -1,4 +1,4 @@
-//Author: Zacharie Mizeret (modified by Andria Kolić)
+//Author: Zacharie Mizeret (modified by Andrija Kolić)
 
 import { mat3, mat4, vec3 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 import { mat4_matmul_many } from "../lib/icg_libs/icg_math.js"

@@ -1,4 +1,4 @@
-// Authors: Zacharie Mizeret, Andria Kolić
+// Authors: Zacharie Mizeret, Andrija Kolić
 
 // IMPORT SECTION
 import {
@@ -250,8 +250,18 @@ function filter_disaster_list(type, visible) {
 }
 
 /**
- * Updates the mouse position based on the ghost position and the mouse offset
- * TODO: Add more documentation (Andria)
+ * Figures out where on the globe the user is currently pointing (with the mouse), and then locates 
+ * the closest disaster in range, activating its hover effect if it wasn't active already. Used
+ * to show the disaster info tooltip on hover.
+ * 
+ * This is achieved by applying 2 rotations to the "ghost" coordinates: 
+ * one in the 'forward' direction, using the distance of the mouse from the center of the screen; 
+ * and one in the clockwise direction, using the angle between the positive y axis and the mouse 
+ * offset (from the center of the screen).
+ * 
+ * Once the coordinates of the hovered location on the globe are calculated, we iterate through
+ * disasters in neighbourhood chunks (optimization in order not to iterate through everything),
+ * finding the closest one in range and activating its hover effect - if not already active.
  */
 function update_mouse() {
     // Copy the ghost position
@@ -345,9 +355,9 @@ function reset_hover_status(lazy = false) {
 }
 
 /**
- * TODO: Add documentation (Andria)
- * @param {Number} x TODO: Add documentation (Andria)
- * @returns 
+ * Finds one index of the containing chunk for a single coordinate.
+ * @param {Number} x A single coordinate.
+ * @returns The index of the containing chunk corresponding to the axis of the coordinate.
  */
 function get_chunk_1d(x) {
     // Used Min and Max to ensure bounds
@@ -355,33 +365,33 @@ function get_chunk_1d(x) {
 }
 
 /**
- * TODO: Add documentation (Andria)
- * @param {Number} position TODO: Add documentation (Andria)
- * @returns 
+ * Finds the indexes of the containing chunk for a 3D coordinate.
+ * @param {Number} position 3D coordinate (x, y, z) relative to the globe center.
+ * @returns Indexes of chunk that contains the coordinate.
  */
 function get_chunk(position) {
     return [get_chunk_1d(position[0]), get_chunk_1d(position[1]), get_chunk_1d(position[2])]
 }
 
 /**
- * TODO: Add documentation (Andria)
- * @returns 
+ * Initializes an 8x8x8 matrix of empty arrays. These will be filled on disaster load.
+ * @returns An 8x8x8 matrix of empty arrays.
  */
 function empty_chunks() {
     return Array(8).fill().map(() => Array(8).fill().map(() => Array(8).fill().map(() => [])))
 }
 
 /**
- * TODO: Add documentation (Andria)
- * @returns 
+ * Adds a '0' padding to a number, if needed - if the number is a single digit one.
+ * @returns The now two digit number (possibly padded with '0').
  */
 function pad_to_two_digits(x) {
     return x < 10 ? '0' + x : x;
 }
 
 /**
- * TODO: Add documentation (Andria)
- * @returns 
+ * Formats a date DD/MM/YYYY ignoring the missing values (either day, or both day and month).
+ * @returns Either YYYY, MM/YYYY or DD/MM/YYYY depending on which values are missing.
  */
 function format_partial_date(day, month, year) {
     let s = ''
@@ -392,7 +402,9 @@ function format_partial_date(day, month, year) {
 }
 
 /**
- * TODO: Add documentation (Andria)
+ * Either shows or hides the disaster info tooltip - should be shown when disaster is hovered,
+ * hidden once disaster is no longer hovered. Also assigns values to the fields in the tooltip 
+ * from the hovered disaster, hiding fields for which the data is missing.
  * @param {Boolean} on Whether to turn the hover on or off
  */
 function toggle_hover(on) {
@@ -429,8 +441,7 @@ function toggle_hover(on) {
 }
 
 /**
- * TODO: Add documentation (Andria)
- * Debug function to log the number of events in each chunk
+ * Debug function to log the number of events in each chunk.
  */
 function log_chunk_counts() {
     for (let i = 0; i < 8; i++) {

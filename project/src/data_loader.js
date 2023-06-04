@@ -1,32 +1,30 @@
-//Author: Andria Kolić
+//Author: Andrija Kolić
 
 import { toRadian } from "../lib/gl-matrix_3.3.0/esm/common.js"
 
-// TODO: would be used for caching
-// let disaster_dict = {}
 
 // Colors for each disaster type:
 export const disaster_colors = {
     // Yellow
-    "Drought": [224./255., 211./255., 25./255.],
+    "Drought": [224. / 255., 211. / 255., 25. / 255.],
     // Brown
-    "Earthquake": [84./255., 37./255., 15./255.],
+    "Earthquake": [84. / 255., 37. / 255., 15. / 255.],
     // Black
     "Volcanic activity": [0.0, 0.0, 0.0],
     // Purple
     "Mass movement": [136. / 255., 0. / 255., 255. / 255.],
     // Light blue
-    "Storm": [40./255., 198./255., 209./255.],
+    "Storm": [40. / 255., 198. / 255., 209. / 255.],
     // Dark blue
-    "Flood": [7./255., 41./255., 143./255.],
+    "Flood": [7. / 255., 41. / 255., 143. / 255.],
     // Bright green
     "Epidemic": [4. / 255., 255. / 255., 0. / 255.],
     // Light grey
     "Landslide": [180. / 255., 180. / 255., 180. / 255.],
     // Orange
-    "Wildfire": [247./255., 84./255., 20./255.],
+    "Wildfire": [247. / 255., 84. / 255., 20. / 255.],
     // Magenta
-    "Extreme temperature": [204./255., 12./255., 188./255.],
+    "Extreme temperature": [204. / 255., 12. / 255., 188. / 255.],
 
 }
 
@@ -64,12 +62,6 @@ function extract_coords(row) {
         arr.forEach(el => {
             coords.push([el['Lat'], el['Lng']])
         })
-
-        // We restrict the maximum number of models assigned to a single disaster event - otherwise we can easily run into performance issues
-        // e.g. Moving from unrestricted to maximum 3 per event reduced the number of models from ~1800 to ~900 (for year 2000)
-        // Moving futher to maximum 1 per event reduced the number of models to ~500
-        // TODO: Maybe select the coordinates we're showing in a smarter way?
-        // coords = coords.slice(0, 1)
     } else if (row['Country Latitude'] != null && row['Country Longitude']) {
         // Latitude and Longitude geocoded from the 'Country' field - poor precision but available for every event
         quality = 2
@@ -139,12 +131,6 @@ function construct_from_disaster_array(disasters) {
 }
 
 async function load_data(year, callback) {
-    // // TODO: if we are doing caching, we would check for cached events here
-    // if (year in disaster_dict && Array.isArray(disaster_dict[year]) && disaster_dict[year].length > 0) {
-    //     callback(construct_from_disaster_array(disaster_dict[year]))
-    //     return
-    // }
-
     fetch('../data/Year_' + year + '.json')
         .then(response => {
             if (!response.ok) {
@@ -153,9 +139,6 @@ async function load_data(year, callback) {
             return response.json();
         })
         .then(json => {
-            // TODO: Do we wanna cache events in memory?
-            // disaster_dict[year] = json
-
             callback(construct_from_disaster_array(json))
         })
         .catch((err) => {
